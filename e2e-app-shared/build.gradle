@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api "one.xis:xis-controller-api:$xisVersion"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/java'
+            include '**/*.html'
+        }
+    }
+}

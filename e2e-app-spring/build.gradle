@@ -5,12 +5,13 @@ plugins {
 }
 
 dependencies {
+    implementation project(':e2e-app-shared')
     implementation "one.xis:xis-spring:$xisVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 }
 
 springBoot {
-    mainClass = 'appspring.SpringApp'
+    mainClass = 'app.SpringMain'
 }
 
 bootJar {

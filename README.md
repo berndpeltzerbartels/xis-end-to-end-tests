@@ -10,14 +10,16 @@ XIS is loaded as a **real Maven dependency** (from `mavenLocal()`), not as a pro
    cd ../xis && ./gradlew publishToMavenLocal
    ```
 2. Java 17+
+3. Beim ersten Playwright-Lauf muss der passende Browser heruntergeladen werden.
 
 ## Modulstruktur
 
 ```
-e2e-app-boot/        XIS-Boot Testanwendung (Navigation, Frontlets, Formular, Counter)
-e2e-app-spring/      Spring-Boot Testanwendung (Platzhalter)
+e2e-app-shared/      Gemeinsame XIS-App (Pages, Frontlets, Formulare, Templates)
+e2e-app-boot/        Schlanker XIS-Boot Runner für die gemeinsame App
+e2e-app-spring/      Schlanker Spring-Boot Runner für die gemeinsame App
 
-e2e-tests-core/      Tests gegen e2e-app-boot  (Playwright)
+e2e-tests-core/      Playwright-Tests gegen die Plattform-Runner
 ```
 
 ## Tests ausführen
@@ -32,9 +34,14 @@ Einzelne Suite:
 ./gradlew :e2e-tests-core:test
 ```
 
+Dieselbe Suite gegen Spring:
+```bash
+./gradlew :e2e-tests-core:springTest
+```
+
 ## Wie es funktioniert
 
-1. Gradle baut zuerst das fat-jar der Test-App.
+1. Gradle baut zuerst das fat-jar des jeweiligen Plattform-Runners.
 2. Die Test-Suite startet das jar als lokalen Prozess auf einem freien Port.
 3. Playwright öffnet einen headless Chromium-Browser gegen diesen Prozess.
 4. Nach den Tests wird der Prozess automatisch gestoppt.

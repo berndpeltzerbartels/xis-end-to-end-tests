@@ -2,9 +2,10 @@ plugins {
     id 'java'
 }
 
-// Diese Suite läuft gegen e2e-app-boot.
-// Der Server wird als lokaler Prozess aus dem fat-jar gestartet.
-// Einzeln ausführen: ./gradlew :e2e-tests-core:test
+// Diese Suite läuft gegen die Plattform-Runner.
+// Der Server wird als lokaler Prozess aus dem jeweiligen fat-jar gestartet.
+// Boot:   ./gradlew :e2e-tests-core:test
+// Spring: ./gradlew :e2e-tests-core:springTest
 
 dependencies {
     // Playwright für Browser-Automatisierung
@@ -21,10 +22,11 @@ dependencies {
 test {
     useJUnitPlatform()
 
-    // Pfad zum fat-jar wird als System-Property übergeben
     def bootJar = project(':e2e-app-boot').tasks.named('jar').get().archiveFile
     dependsOn project(':e2e-app-boot').tasks.named('jar')
-    systemProperty 'e2e.app.boot.jar', bootJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
 
     afterTest { desc, result ->
         logger.quiet "${desc.className} - ${desc.name}: ${result.resultType}"
@@ -33,3 +35,26 @@ test {
     // Nicht parallel - jede Testklasse startet eine App-Instanz.
     maxParallelForks = 1
 }
+
+tasks.register('springTest', Test) {
+    description = 'Runs the shared E2E tests against the Spring runner.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def springJar = project(':e2e-app-spring').tasks.named('bootJar').get().archiveFile
+    dependsOn project(':e2e-app-spring').tasks.named('bootJar')
+    systemProperty 'e2e.app.jar', springJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '--server.port=%d'
+    systemProperty 'e2e.app.platform', 'spring'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [spring] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
+check.dependsOn tasks.named('springTest')

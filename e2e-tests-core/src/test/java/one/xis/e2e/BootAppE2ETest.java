@@ -19,12 +19,12 @@ import java.net.http.HttpResponse;
 import java.time.Instant;
 
 /**
- * Base class for all E2E tests against e2e-app-boot.
+ * Base class for all E2E tests against a runnable XIS platform app.
  * <p>
- * Starts the XIS-Boot fat-jar once per test class as a local process,
+ * Starts the platform fat-jar once per test class as a local process,
  * opens a headless Chromium via Playwright for each test method.
  * <p>
- * The fat-jar path is provided by Gradle as system property {@code e2e.app.boot.jar}.
+ * The fat-jar path and port argument format are provided by Gradle.
  */
 public abstract class BootAppE2ETest {
 
@@ -35,18 +35,19 @@ public abstract class BootAppE2ETest {
 
     @BeforeAll
     static void startApplication() {
-        String jarPath = System.getProperty("e2e.app.boot.jar");
+        String jarPath = System.getProperty("e2e.app.jar");
         if (jarPath == null) {
             throw new IllegalStateException(
-                "System property 'e2e.app.boot.jar' not set. " +
+                "System property 'e2e.app.jar' not set. " +
                 "Run via Gradle: ./gradlew :e2e-tests-core:test");
         }
+        String portArgumentFormat = System.getProperty("e2e.app.portArgument", "%d");
 
         int port = findFreePort();
         baseUrl = "http://127.0.0.1:" + port;
 
         try {
-            appProcess = new ProcessBuilder("java", "-jar", jarPath, Integer.toString(port))
+            appProcess = new ProcessBuilder("java", "-jar", jarPath, portArgumentFormat.formatted(port))
                 .inheritIO()
                 .start();
             waitForConfig();
@@ -141,4 +142,5 @@ public abstract class BootAppE2ETest {
 
         throw new IllegalStateException("XIS E2E app did not become ready at " + baseUrl);
     }
+
 }

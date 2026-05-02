@@ -1,6 +1,7 @@
 rootProject.name = 'xis-end-to-end-tests'
 
 // Test applications (produce runnable JARs / Docker images)
+include 'e2e-app-shared'
 include 'e2e-app-boot'
 include 'e2e-app-spring'
 

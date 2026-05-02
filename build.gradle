@@ -1,0 +1,48 @@
+// Root build – gemeinsame Konfiguration für alle Submodule
+plugins {
+    id 'java'
+}
+
+ext {
+    xisVersion        = '0.5.0'
+    javaVersion       = JavaVersion.VERSION_17
+    javaVersionInt    = 17
+
+    lombokVersion     = '1.18.22'
+    springBootVersion = '3.3.0'
+    junitVersion      = '5.8.2'
+    assertjVersion    = '3.26.0'
+    playwrightVersion = '1.44.0'
+    slf4jVersion      = '2.0.3'
+}
+
+allprojects {
+    group   = 'one.xis.e2e'
+    version = xisVersion
+
+    repositories {
+        mavenLocal()      // XIS artifacts aus lokalem Maven-Repo
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(javaVersionInt)
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = javaVersion.toString()
+        targetCompatibility = javaVersion.toString()
+        options.encoding = 'UTF-8'
+    }
+
+    dependencies {
+        annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+        implementation     "org.projectlombok:lombok:$lombokVersion"
+    }
+}

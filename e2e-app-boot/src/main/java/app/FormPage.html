@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Form</title></head>
+<body>
+<h1>Form test</h1>
+<xis:form binding="person">
+  <input  id="input-name"  type="text"  xis:binding="name"  placeholder="Name"/>
+  <input  id="input-email" type="email" xis:binding="email" placeholder="Email"/>
+  <button id="btn-submit"  xis:action="submit" type="submit">Submit</button>
+  <button id="btn-reset"   xis:action="reset" type="button">Reset</button>
+</xis:form>
+<div id="result" xis:if="${submitted}">
+  <span id="saved-name">${savedName}</span>
+  <span id="saved-email">${savedEmail}</span>
+</div>
+<a id="nav-home" xis:page="/index.html">Home</a>
+</body>
+</html>

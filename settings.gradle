@@ -1,0 +1,9 @@
+rootProject.name = 'xis-end-to-end-tests'
+
+// Test applications (produce runnable JARs / Docker images)
+include 'e2e-app-boot'
+include 'e2e-app-spring'
+
+// Test suites (Playwright)
+// Each suite can be run independently: ./gradlew :e2e-tests-core:test
+include 'e2e-tests-core'

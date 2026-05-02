@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Index</title></head>
+<body>
+<h1 id="title">${title}</h1>
+<nav>
+  <a id="nav-navigation" xis:page="/navigation.html">Navigation test</a>
+  <a id="nav-frontlets"  xis:page="/frontlets.html">Frontlet test</a>
+  <a id="nav-form"       xis:page="/form.html">Form test</a>
+  <a id="nav-counter"    xis:page="/counter.html">Counter test</a>
+</nav>
+<ul id="features">
+  <li xis:foreach="f:${features}">${f}</li>
+</ul>
+</body>
+</html>

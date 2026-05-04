@@ -126,6 +126,11 @@ public abstract class BootAppE2ETest {
                 if (response.statusCode() == 200) {
                     return;
                 }
+                if (isTransientGatewayStatus(response.statusCode())) {
+                    continue;
+                }
+                throw new IllegalStateException(
+                    "XIS E2E app responded on /xis/config with status " + response.statusCode());
             } catch (IOException | InterruptedException ignored) {
                 if (ignored instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
@@ -141,6 +146,10 @@ public abstract class BootAppE2ETest {
         }
 
         throw new IllegalStateException("XIS E2E app did not become ready at " + baseUrl);
+    }
+
+    private static boolean isTransientGatewayStatus(int statusCode) {
+        return statusCode == 502 || statusCode == 503 || statusCode == 504;
     }
 
 }

@@ -21,6 +21,6 @@ public class IndexPage {
 
     @ModelData("features")
     List<String> features() {
-        return List.of("navigation", "frontlets", "form", "counter");
+        return List.of("navigation", "frontlets", "form", "counter", "expression-language");
     }
 }

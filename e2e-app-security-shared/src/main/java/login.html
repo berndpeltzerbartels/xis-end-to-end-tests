@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Login</title></head>
+<body>
+<form xis:binding="login" id="login-form">
+    <h1 id="login-title">Custom Login</h1>
+    <label for="username">Username</label>
+    <input xis:binding="username" type="text" id="username"/>
+    <label for="password">Password</label>
+    <input xis:binding="password" type="password" id="password"/>
+    <input xis:binding="state" type="hidden" id="state"/>
+    <button xis:action="login" type="submit" id="login-button">Login</button>
+</form>
+</body>
+</html>

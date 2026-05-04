@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Editor</title></head>
+<body>
+<h1 id="editor-title">Editor</h1>
+<form xis:binding="editor">
+    <input id="editor-value" xis:binding="value" type="text"/>
+    <button id="editor-save" xis:action="save" type="submit">Save</button>
+</form>
+<p id="saved-value">${savedValue}</p>
+</body>
+</html>

@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+dependencies {
+    implementation project(':e2e-app-security-shared')
+    implementation "one.xis:xis-boot:$xisVersion"
+    implementation "one.xis:xis-authentication:$xisVersion"
+    implementation "org.slf4j:slf4j-simple:$slf4jVersion"
+}
+
+application {
+    mainClass = 'app.SecurityMain'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    manifest {
+        attributes 'Main-Class': 'app.SecurityMain'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = 'runnable'
+}

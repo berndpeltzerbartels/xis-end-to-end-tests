@@ -1,0 +1,18 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api "one.xis:xis-controller-api:$xisVersion"
+    api "one.xis:xis-authentication-api:$xisVersion"
+    api "one.xis:xis-context:$xisVersion"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/java'
+            include '**/*.html'
+        }
+    }
+}

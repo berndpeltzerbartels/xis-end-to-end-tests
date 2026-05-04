@@ -1,0 +1,141 @@
+package one.xis.e2e.security;
+
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Instant;
+
+abstract class SecurityAppE2ETest {
+
+    protected static Process appProcess;
+    protected static String baseUrl;
+
+    private static Playwright playwright;
+    private static Browser browser;
+
+    protected BrowserContext context;
+    protected Page page;
+
+    @BeforeAll
+    static void startApplication() {
+        String jarPath = System.getProperty("e2e.app.jar");
+        if (jarPath == null) {
+            throw new IllegalStateException("System property 'e2e.app.jar' not set.");
+        }
+        String portArgumentFormat = System.getProperty("e2e.app.portArgument", "%d");
+        int port = findFreePort();
+        baseUrl = "http://localhost:" + port;
+
+        try {
+            appProcess = new ProcessBuilder("java", "-jar", jarPath, portArgumentFormat.formatted(port))
+                    .inheritIO()
+                    .start();
+            waitForConfig();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to start XIS security E2E app", e);
+        }
+    }
+
+    @AfterAll
+    static void stopApplication() {
+        if (appProcess != null) {
+            appProcess.destroy();
+        }
+    }
+
+    @BeforeAll
+    static void startBrowser() {
+        playwright = Playwright.create();
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
+    }
+
+    @AfterAll
+    static void closeBrowser() {
+        if (browser != null) browser.close();
+        if (playwright != null) playwright.close();
+    }
+
+    @BeforeEach
+    void openPage() {
+        context = browser.newContext();
+        page = context.newPage();
+    }
+
+    @AfterEach
+    void closePage() {
+        context.close();
+    }
+
+    protected void navigateTo(String path) {
+        page.navigate(baseUrl + path);
+        page.waitForLoadState();
+    }
+
+    protected void login(String username, String password, String expectedPath) {
+        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.locator("#username").fill(username);
+        page.locator("#password").fill(password);
+        page.locator("#login-button").click();
+        page.waitForURL(baseUrl + expectedPath);
+        page.waitForLoadState();
+    }
+
+    private static int findFreePort() {
+        try (var socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to find a free port", e);
+        }
+    }
+
+    private static void waitForConfig() {
+        var client = HttpClient.newHttpClient();
+        var request = HttpRequest.newBuilder(URI.create(baseUrl + "/xis/config")).GET().build();
+        var deadline = Instant.now().plusSeconds(60);
+
+        while (Instant.now().isBefore(deadline)) {
+            if (!appProcess.isAlive()) {
+                throw new IllegalStateException("XIS security E2E app exited before it became ready");
+            }
+            try {
+                var response = client.send(request, HttpResponse.BodyHandlers.discarding());
+                if (response.statusCode() == 200) {
+                    return;
+                }
+                if (!isTransientGatewayStatus(response.statusCode())) {
+                    throw new IllegalStateException("XIS security E2E app responded on /xis/config with status " + response.statusCode());
+                }
+            } catch (IOException | InterruptedException ignored) {
+                if (ignored instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted while waiting for XIS security E2E app", ignored);
+                }
+            }
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while waiting for XIS security E2E app", e);
+            }
+        }
+
+        throw new IllegalStateException("XIS security E2E app did not become ready at " + baseUrl);
+    }
+
+    private static boolean isTransientGatewayStatus(int statusCode) {
+        return statusCode == 502 || statusCode == 503 || statusCode == 504;
+    }
+}

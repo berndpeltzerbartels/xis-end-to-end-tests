@@ -1,9 +1,11 @@
 package one.xis.e2e.security;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
+@EnabledIfSystemProperty(named = "e2e.security.mode", matches = "local")
 class LocalSecurityE2ETest extends SecurityAppE2ETest {
 
     @Test

@@ -18,6 +18,7 @@ test {
     systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
     systemProperty 'e2e.app.portArgument', '%d'
     systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'local'
 
     afterTest { desc, result ->
         logger.quiet "${desc.className} - ${desc.name}: ${result.resultType}"
@@ -39,6 +40,7 @@ tasks.register('springTest', Test) {
     systemProperty 'e2e.app.jar', springJar.get().asFile.absolutePath
     systemProperty 'e2e.app.portArgument', '--server.port=%d'
     systemProperty 'e2e.app.platform', 'spring'
+    systemProperty 'e2e.security.mode', 'local'
 
     afterTest { desc, result ->
         logger.quiet "${desc.className} [spring] - ${desc.name}: ${result.resultType}"
@@ -47,4 +49,50 @@ tasks.register('springTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('externalTest', Test) {
+    description = 'Runs the security E2E tests against the XIS Boot runner with an external OIDC provider.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def bootJar = project(':e2e-app-security-external-boot').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-security-external-boot').tasks.named('jar')
+    systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'external'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [external boot] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
+tasks.register('externalSpringTest', Test) {
+    description = 'Runs the security E2E tests against the Spring runner with an external OIDC provider.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def springJar = project(':e2e-app-security-external-spring').tasks.named('bootJar').get().archiveFile
+    dependsOn project(':e2e-app-security-external-spring').tasks.named('bootJar')
+    systemProperty 'e2e.app.jar', springJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '--server.port=%d'
+    systemProperty 'e2e.app.platform', 'spring'
+    systemProperty 'e2e.security.mode', 'external'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [external spring] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
+check.dependsOn tasks.named('externalTest')
+check.dependsOn tasks.named('externalSpringTest')

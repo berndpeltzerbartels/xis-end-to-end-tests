@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -22,6 +23,7 @@ abstract class SecurityAppE2ETest {
 
     protected static Process appProcess;
     protected static String baseUrl;
+    private static MockOidcProvider mockOidcProvider;
 
     private static Playwright playwright;
     private static Browser browser;
@@ -40,7 +42,16 @@ abstract class SecurityAppE2ETest {
         baseUrl = "http://localhost:" + port;
 
         try {
-            appProcess = new ProcessBuilder("java", "-jar", jarPath, portArgumentFormat.formatted(port))
+            var command = new ArrayList<String>();
+            command.add("java");
+            if (isExternalMode()) {
+                mockOidcProvider = MockOidcProvider.start();
+                command.add("-De2e.oidc.url=" + mockOidcProvider.getIssuer());
+            }
+            command.add("-jar");
+            command.add(jarPath);
+            command.add(portArgumentFormat.formatted(port));
+            appProcess = new ProcessBuilder(command)
                     .inheritIO()
                     .start();
             waitForConfig();
@@ -53,6 +64,10 @@ abstract class SecurityAppE2ETest {
     static void stopApplication() {
         if (appProcess != null) {
             appProcess.destroy();
+        }
+        if (mockOidcProvider != null) {
+            mockOidcProvider.close();
+            mockOidcProvider = null;
         }
     }
 
@@ -91,6 +106,14 @@ abstract class SecurityAppE2ETest {
         page.locator("#login-button").click();
         page.waitForURL(baseUrl + expectedPath);
         page.waitForLoadState();
+    }
+
+    protected static boolean isLocalMode() {
+        return "local".equals(System.getProperty("e2e.security.mode", "local"));
+    }
+
+    protected static boolean isExternalMode() {
+        return "external".equals(System.getProperty("e2e.security.mode", "local"));
     }
 
     private static int findFreePort() {

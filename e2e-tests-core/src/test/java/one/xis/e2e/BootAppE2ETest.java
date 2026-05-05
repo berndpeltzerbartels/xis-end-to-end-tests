@@ -66,7 +66,7 @@ public abstract class BootAppE2ETest {
     // --- Playwright (once per JVM, shared across test classes) --------------
 
     private static Playwright playwright;
-    private static Browser browser;
+    protected static Browser browser;
 
     @BeforeAll
     static void startBrowser() {

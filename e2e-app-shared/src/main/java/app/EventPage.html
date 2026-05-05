@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head>
+    <title>Events</title>
+</head>
+<body>
+<h1 id="events-title">Events</h1>
+<p id="event-version">${version}</p>
+<button id="publish-all" xis:action="publishToAll">Publish to all</button>
+<button id="publish-client" xis:action="publishToCurrentClient">Publish to current client</button>
+<button id="reset-events" xis:action="resetEvents">Reset events</button>
+
+<section id="source-container">
+    <xis:frontlet-container container-id="event-source" default-frontlet="EventSourceFrontlet"/>
+</section>
+
+<section id="target-container">
+    <xis:frontlet-container container-id="event-target" default-frontlet="EventTargetFrontlet"/>
+</section>
+</body>
+</html>

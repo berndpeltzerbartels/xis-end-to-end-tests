@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     api "one.xis:xis-controller-api:$xisVersion"
+    api "one.xis:xis-server:$xisVersion"
 }
 
 sourceSets {

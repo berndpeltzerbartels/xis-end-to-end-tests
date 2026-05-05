@@ -28,7 +28,7 @@ abstract class SecurityAppE2ETest {
     private static MockOidcProvider mockOidcProvider;
 
     private static Playwright playwright;
-    private static Browser browser;
+    protected static Browser browser;
 
     protected BrowserContext context;
     protected Page page;

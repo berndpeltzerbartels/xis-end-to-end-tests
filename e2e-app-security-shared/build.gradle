@@ -6,6 +6,7 @@ dependencies {
     api "one.xis:xis-controller-api:$xisVersion"
     api "one.xis:xis-authentication-api:$xisVersion"
     api "one.xis:xis-context:$xisVersion"
+    api "one.xis:xis-server:$xisVersion"
 }
 
 sourceSets {

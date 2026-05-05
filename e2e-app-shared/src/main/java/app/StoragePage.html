@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head>
+    <title>Storage</title>
+</head>
+<body>
+<h1 id="storage-title">Storage</h1>
+
+<section xis:storage-binding="localStorage">
+    <span id="local-count">${defaultValue(localStorage.localCounter.count, '0')}</span>
+    <button id="local-increment" xis:action="incrementLocal">Increment local</button>
+    <button id="local-reset" xis:action="resetLocal">Reset local</button>
+</section>
+
+<section xis:storage-binding="sessionStorage">
+    <span id="session-count">${defaultValue(sessionStorage.sessionCounter.count, '0')}</span>
+    <button id="session-increment" xis:action="incrementSession">Increment session</button>
+    <button id="session-reset" xis:action="resetSession">Reset session</button>
+</section>
+</body>
+</html>

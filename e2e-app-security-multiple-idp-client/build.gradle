@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+dependencies {
+    implementation project(':e2e-app-security-shared')
+    implementation "one.xis:xis-boot:$xisVersion"
+    implementation "one.xis:xis-authentication:$xisVersion"
+    implementation "one.xis:xis-idp-client:$xisVersion"
+    implementation "org.slf4j:slf4j-simple:$slf4jVersion"
+}
+
+application {
+    mainClass = 'app.MultipleIdpClientMain'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    manifest {
+        attributes 'Main-Class': 'app.MultipleIdpClientMain'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = 'runnable'
+}

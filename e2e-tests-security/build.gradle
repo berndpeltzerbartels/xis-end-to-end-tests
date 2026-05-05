@@ -93,6 +93,60 @@ tasks.register('externalSpringTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('xisIdpTest', Test) {
+    description = 'Runs the security E2E tests against a XIS app using a XIS IDP provider.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def clientJar = project(':e2e-app-security-xis-idp-client').tasks.named('jar').get().archiveFile
+    def idpJar = project(':e2e-app-security-xis-idp').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-security-xis-idp-client').tasks.named('jar')
+    dependsOn project(':e2e-app-security-xis-idp').tasks.named('jar')
+    systemProperty 'e2e.app.jar', clientJar.get().asFile.absolutePath
+    systemProperty 'e2e.idp.jar', idpJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.idp.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'xis-idp'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [xis idp] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
+tasks.register('multipleIdpTest', Test) {
+    description = 'Runs the security E2E tests against a XIS app with XIS IDP and another OpenID Connect provider.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def clientJar = project(':e2e-app-security-multiple-idp-client').tasks.named('jar').get().archiveFile
+    def idpJar = project(':e2e-app-security-xis-idp').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-security-multiple-idp-client').tasks.named('jar')
+    dependsOn project(':e2e-app-security-xis-idp').tasks.named('jar')
+    systemProperty 'e2e.app.jar', clientJar.get().asFile.absolutePath
+    systemProperty 'e2e.idp.jar', idpJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.idp.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'multiple-idp'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [multiple idp] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('externalTest')
 check.dependsOn tasks.named('externalSpringTest')
+check.dependsOn tasks.named('xisIdpTest')
+check.dependsOn tasks.named('multipleIdpTest')

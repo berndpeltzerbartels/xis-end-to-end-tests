@@ -9,6 +9,9 @@ include 'e2e-app-security-boot'
 include 'e2e-app-security-spring'
 include 'e2e-app-security-external-boot'
 include 'e2e-app-security-external-spring'
+include 'e2e-app-security-xis-idp'
+include 'e2e-app-security-xis-idp-client'
+include 'e2e-app-security-multiple-idp-client'
 
 // Test suites (Playwright)
 // Each suite can be run independently: ./gradlew :e2e-tests-core:test

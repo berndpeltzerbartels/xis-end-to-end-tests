@@ -11,5 +11,10 @@
     <input xis:binding="state" type="hidden" id="state"/>
     <button xis:action="login" type="submit" id="login-button">Login</button>
 </form>
+<nav id="idp-links">
+    <div xis:repeat="idpId:externalIdpIds">
+        <a class="idp-link" id="idp-${idpId}" href="${externalIdpUrls[idpId]}">${idpId}</a>
+    </div>
+</nav>
 </body>
 </html>

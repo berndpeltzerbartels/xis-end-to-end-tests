@@ -22,7 +22,9 @@ import java.time.Instant;
 abstract class SecurityAppE2ETest {
 
     protected static Process appProcess;
+    protected static Process idpProcess;
     protected static String baseUrl;
+    protected static String idpBaseUrl;
     private static MockOidcProvider mockOidcProvider;
 
     private static Playwright playwright;
@@ -40,13 +42,24 @@ abstract class SecurityAppE2ETest {
         String portArgumentFormat = System.getProperty("e2e.app.portArgument", "%d");
         int port = findFreePort();
         baseUrl = "http://localhost:" + port;
+        int idpPort = findFreePort();
+        idpBaseUrl = "http://localhost:" + idpPort;
 
         try {
+            if (usesXisIdp()) {
+                startXisIdp(idpPort);
+            }
+            if (usesMockOidc()) {
+                mockOidcProvider = MockOidcProvider.start();
+            }
+
             var command = new ArrayList<String>();
             command.add("java");
-            if (isExternalMode()) {
-                mockOidcProvider = MockOidcProvider.start();
+            if (usesMockOidc()) {
                 command.add("-De2e.oidc.url=" + mockOidcProvider.getIssuer());
+            }
+            if (usesXisIdp()) {
+                command.add("-De2e.xis.idp.url=" + idpBaseUrl);
             }
             command.add("-jar");
             command.add(jarPath);
@@ -54,7 +67,7 @@ abstract class SecurityAppE2ETest {
             appProcess = new ProcessBuilder(command)
                     .inheritIO()
                     .start();
-            waitForConfig();
+            waitForConfig(appProcess, baseUrl);
         } catch (IOException e) {
             throw new RuntimeException("Failed to start XIS security E2E app", e);
         }
@@ -64,6 +77,10 @@ abstract class SecurityAppE2ETest {
     static void stopApplication() {
         if (appProcess != null) {
             appProcess.destroy();
+        }
+        if (idpProcess != null) {
+            idpProcess.destroy();
+            idpProcess = null;
         }
         if (mockOidcProvider != null) {
             mockOidcProvider.close();
@@ -108,12 +125,54 @@ abstract class SecurityAppE2ETest {
         page.waitForLoadState();
     }
 
+    protected void loginAtXisIdp() {
+        page.waitForURL(idpBaseUrl + "/idp/login.html**");
+        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.locator("#username").fill("xis-idp-user");
+        page.locator("#password").fill("secret");
+        page.locator("button[type='submit']").click();
+    }
+
     protected static boolean isLocalMode() {
         return "local".equals(System.getProperty("e2e.security.mode", "local"));
     }
 
     protected static boolean isExternalMode() {
         return "external".equals(System.getProperty("e2e.security.mode", "local"));
+    }
+
+    protected static boolean isXisIdpMode() {
+        return "xis-idp".equals(System.getProperty("e2e.security.mode", "local"));
+    }
+
+    protected static boolean isMultipleIdpMode() {
+        return "multiple-idp".equals(System.getProperty("e2e.security.mode", "local"));
+    }
+
+    private static boolean usesMockOidc() {
+        return isExternalMode() || isMultipleIdpMode();
+    }
+
+    private static boolean usesXisIdp() {
+        return isXisIdpMode() || isMultipleIdpMode();
+    }
+
+    private static void startXisIdp(int port) throws IOException {
+        String jarPath = System.getProperty("e2e.idp.jar");
+        if (jarPath == null) {
+            throw new IllegalStateException("System property 'e2e.idp.jar' not set.");
+        }
+        String portArgumentFormat = System.getProperty("e2e.idp.portArgument", "%d");
+        var command = new ArrayList<String>();
+        command.add("java");
+        command.add("-De2e.idp.client.redirect.uri=" + baseUrl + "/xis/auth/callback/xis-idp");
+        command.add("-jar");
+        command.add(jarPath);
+        command.add(portArgumentFormat.formatted(port));
+        idpProcess = new ProcessBuilder(command)
+                .inheritIO()
+                .start();
+        waitForConfig(idpProcess, idpBaseUrl);
     }
 
     private static int findFreePort() {
@@ -124,14 +183,14 @@ abstract class SecurityAppE2ETest {
         }
     }
 
-    private static void waitForConfig() {
+    private static void waitForConfig(Process process, String url) {
         var client = HttpClient.newHttpClient();
-        var request = HttpRequest.newBuilder(URI.create(baseUrl + "/xis/config")).GET().build();
+        var request = HttpRequest.newBuilder(URI.create(url + "/xis/config")).GET().build();
         var deadline = Instant.now().plusSeconds(60);
 
         while (Instant.now().isBefore(deadline)) {
-            if (!appProcess.isAlive()) {
-                throw new IllegalStateException("XIS security E2E app exited before it became ready");
+            if (!process.isAlive()) {
+                throw new IllegalStateException("XIS security E2E process exited before it became ready");
             }
             try {
                 var response = client.send(request, HttpResponse.BodyHandlers.discarding());
@@ -139,7 +198,7 @@ abstract class SecurityAppE2ETest {
                     return;
                 }
                 if (!isTransientGatewayStatus(response.statusCode())) {
-                    throw new IllegalStateException("XIS security E2E app responded on /xis/config with status " + response.statusCode());
+                    throw new IllegalStateException("XIS security E2E process responded on /xis/config with status " + response.statusCode());
                 }
             } catch (IOException | InterruptedException ignored) {
                 if (ignored instanceof InterruptedException) {
@@ -155,7 +214,7 @@ abstract class SecurityAppE2ETest {
             }
         }
 
-        throw new IllegalStateException("XIS security E2E app did not become ready at " + baseUrl);
+        throw new IllegalStateException("XIS security E2E process did not become ready at " + url);
     }
 
     private static boolean isTransientGatewayStatus(int statusCode) {

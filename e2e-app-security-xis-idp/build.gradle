@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+dependencies {
+    implementation "one.xis:xis-boot:$xisVersion"
+    implementation "one.xis:xis-authentication-api:$xisVersion"
+    implementation "one.xis:xis-idp-server:$xisVersion"
+    implementation "org.slf4j:slf4j-simple:$slf4jVersion"
+}
+
+application {
+    mainClass = 'app.XisIdpMain'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    manifest {
+        attributes 'Main-Class': 'app.XisIdpMain'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = 'runnable'
+}

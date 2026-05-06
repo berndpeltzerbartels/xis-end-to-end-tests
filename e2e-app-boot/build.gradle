@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation project(':e2e-app-shared')
     implementation "one.xis:xis-boot:$xisVersion"
+    implementation "one.xis:xis-theme:$xisVersion"
     implementation "org.slf4j:slf4j-simple:$slf4jVersion"
 }
 

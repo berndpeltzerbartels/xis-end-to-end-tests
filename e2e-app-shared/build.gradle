@@ -11,7 +11,7 @@ sourceSets {
     main {
         resources {
             srcDir 'src/main/java'
-            include '**/*.html'
+            include '**/*.html', 'public/**'
         }
     }
 }

@@ -7,6 +7,7 @@ plugins {
 dependencies {
     implementation project(':e2e-app-shared')
     implementation "one.xis:xis-spring:$xisVersion"
+    implementation "one.xis:xis-theme:$xisVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 }
 

@@ -23,6 +23,19 @@ class DistributedE2ETest extends DistributedAppE2ETest {
     }
 
     @Test
+    void remoteFrontletActionCanSwitchToRemoteFrontletByUrl() {
+        page.navigate(pageBaseUrl + "/distributed-shell.html");
+        page.waitForLoadState();
+
+        page.locator("#open-next-frontlet-by-url").click();
+
+        assertThat(page.locator("#distributed-next-remote-frontlet")).isVisible();
+        assertThat(page.locator("#next-frontlet-server")).hasText("remote");
+        assertThat(page.locator("#next-frontlet-message")).hasText("from-url");
+        assertThat(page.locator("#next-frontlet-parameters")).hasText("message=from-url,source=remote-frontlet");
+    }
+
+    @Test
     void shellPageNavigatesToRemotePageAndRunsActionsOnRemoteServer() {
         page.navigate(pageBaseUrl + "/distributed-shell.html");
         page.waitForLoadState();

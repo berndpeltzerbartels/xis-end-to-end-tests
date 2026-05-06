@@ -3,6 +3,7 @@ package app;
 import one.xis.context.Component;
 import one.xis.distributed.XisDistributedConfig;
 
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -10,25 +11,19 @@ public class DistributedRoutingConfig implements XisDistributedConfig {
 
     static final String REMOTE_PAGE = "/distributed-remote.html";
     static final String REMOTE_FRONTLET = "DistributedRemoteFrontlet";
+    static final String NEXT_REMOTE_FRONTLET = "DistributedNextRemoteFrontlet";
 
     @Override
-    public boolean isRemoteWidget(String widgetId) {
-        return REMOTE_FRONTLET.equals(widgetId);
+    public Map<String, String> getWidgetHosts() {
+        return Map.of(
+                REMOTE_FRONTLET, remoteHost(),
+                NEXT_REMOTE_FRONTLET, remoteHost()
+        );
     }
 
     @Override
-    public boolean isRemotePage(String normalizedPath) {
-        return REMOTE_PAGE.equals(normalizedPath);
-    }
-
-    @Override
-    public String getWidgetHost(String widgetId) {
-        return isRemoteWidget(widgetId) ? remoteHost() : null;
-    }
-
-    @Override
-    public String getPageHost(String normalizedPath) {
-        return isRemotePage(normalizedPath) ? remoteHost() : null;
+    public Map<String, String> getPageHosts() {
+        return Map.of(REMOTE_PAGE, remoteHost());
     }
 
     @Override

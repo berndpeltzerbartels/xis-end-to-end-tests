@@ -2,9 +2,10 @@ package app;
 
 import one.xis.Action;
 import one.xis.Frontlet;
+import one.xis.FrontletResponse;
 import one.xis.ModelData;
 
-@Frontlet
+@Frontlet(url = "/distributed-remote-frontlet", containerId = "remote-frontlet")
 public class DistributedRemoteFrontlet {
 
     private int count;
@@ -22,5 +23,10 @@ public class DistributedRemoteFrontlet {
     @Action
     void incrementFrontlet() {
         count++;
+    }
+
+    @Action
+    FrontletResponse openNextFrontletByUrl() {
+        return new FrontletResponse("/distributed-next-frontlet?message=from-url&source=remote-frontlet");
     }
 }

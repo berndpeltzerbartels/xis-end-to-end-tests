@@ -58,7 +58,8 @@ class FormE2ETest extends BootAppE2ETest {
 
     private void openForm() {
         navigateTo("/form.html");
-        page.locator("#btn-reset").click();
+        page.waitForResponse(response -> response.url().contains("/xis/form/action"),
+                () -> page.locator("#btn-reset").click());
         assertThat(page.locator("#result")).not().isVisible();
     }
 }

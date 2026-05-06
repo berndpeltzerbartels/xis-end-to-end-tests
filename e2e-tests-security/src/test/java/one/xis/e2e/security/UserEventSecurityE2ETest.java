@@ -37,6 +37,32 @@ class UserEventSecurityE2ETest extends SecurityAppE2ETest {
         }
     }
 
+    @Test
+    void refreshEventToAllUsersUpdatesEveryAuthenticatedClient() {
+        BrowserContext aliceContext = browser.newContext();
+        BrowserContext editorContext = browser.newContext();
+        try {
+            Page aliceOtherPage = loginAndOpenUserEvents(aliceContext, "alice");
+            Page editorPage = loginAndOpenUserEvents(editorContext, "editor");
+            loginAndOpenUserEvents(page, "alice");
+
+            resetAllUsersEvent(page);
+
+            assertThat(page.locator("#all-users-event-version")).hasText("0");
+            assertThat(aliceOtherPage.locator("#all-users-event-version")).hasText("0");
+            assertThat(editorPage.locator("#all-users-event-version")).hasText("0");
+
+            page.locator("#publish-all-users-event").click();
+
+            assertThat(page.locator("#all-users-event-version")).hasText("1");
+            assertThat(aliceOtherPage.locator("#all-users-event-version")).hasText("1");
+            assertThat(editorPage.locator("#all-users-event-version")).hasText("1");
+        } finally {
+            aliceContext.close();
+            editorContext.close();
+        }
+    }
+
     private Page loginAndOpenUserEvents(BrowserContext context, String username) {
         Page targetPage = context.newPage();
         return loginAndOpenUserEvents(targetPage, username);
@@ -58,5 +84,10 @@ class UserEventSecurityE2ETest extends SecurityAppE2ETest {
     private void resetUserEvent(Page targetPage) {
         targetPage.locator("#reset-user-event").click();
         assertThat(targetPage.locator("#user-event-version")).hasText("0");
+    }
+
+    private void resetAllUsersEvent(Page targetPage) {
+        targetPage.locator("#reset-all-users-event").click();
+        assertThat(targetPage.locator("#all-users-event-version")).hasText("0");
     }
 }

@@ -6,7 +6,7 @@ import one.xis.Page;
 import one.xis.RefreshOnUpdateEvents;
 import one.xis.Roles;
 import one.xis.UserId;
-import one.xis.server.RefreshEventPublisher;
+import one.xis.RefreshEventPublisher;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

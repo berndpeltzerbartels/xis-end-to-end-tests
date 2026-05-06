@@ -4,7 +4,7 @@ plugins {
 }
 
 ext {
-    xisVersion        = '0.5.0'
+    xisVersion        = '0.7.0'
     javaVersion       = JavaVersion.VERSION_17
     javaVersionInt    = 17
 

@@ -5,7 +5,7 @@ import one.xis.ClientId;
 import one.xis.ModelData;
 import one.xis.Page;
 import one.xis.RefreshOnUpdateEvents;
-import one.xis.server.RefreshEventPublisher;
+import one.xis.RefreshEventPublisher;
 
 @Page("/events.html")
 @RefreshOnUpdateEvents("core-event")

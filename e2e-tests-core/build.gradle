@@ -21,6 +21,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    exclude '**/DistributedE2ETest.class'
 
     def bootJar = project(':e2e-app-boot').tasks.named('jar').get().archiveFile
     dependsOn project(':e2e-app-boot').tasks.named('jar')
@@ -41,6 +42,7 @@ tasks.register('springTest', Test) {
     group = 'verification'
 
     useJUnitPlatform()
+    exclude '**/DistributedE2ETest.class'
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
 
@@ -62,6 +64,7 @@ tasks.register('distributedTest', Test) {
     group = 'verification'
 
     useJUnitPlatform()
+    include '**/DistributedE2ETest.class'
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
 

@@ -1,6 +1,7 @@
 // Root build – gemeinsame Konfiguration für alle Submodule
 plugins {
     id 'java'
+    id 'one.xis.plugin' version '0.7.0' apply false
 }
 
 ext {
@@ -29,13 +30,20 @@ allprojects {
 subprojects {
     apply plugin: 'java'
 
+
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(javaVersionInt)
         }
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.named('compileJava', JavaCompile) {
+        sourceCompatibility = javaVersion.toString()
+        targetCompatibility = javaVersion.toString()
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.named('compileTestJava', JavaCompile) {
         sourceCompatibility = javaVersion.toString()
         targetCompatibility = javaVersion.toString()
         options.encoding = 'UTF-8'

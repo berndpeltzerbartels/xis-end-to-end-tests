@@ -1,19 +1,11 @@
 plugins {
     id 'java-library'
+    id 'one.xis.plugin'
 }
 
 dependencies {
-    api "one.xis:xis-controller-api:$xisVersion"
-    api "one.xis:xis-authentication-api:$xisVersion"
-    api "one.xis:xis-context:$xisVersion"
-    api "one.xis:xis-server:$xisVersion"
-}
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'src/main/java'
-            include '**/*.html'
-        }
-    }
+    api "one.xis:xis-controller-api"
+    api "one.xis:xis-authentication-api"
+    api "one.xis:xis-context"
+    api "one.xis:xis-server"
 }

@@ -1,17 +1,9 @@
 plugins {
     id 'java-library'
+    id 'one.xis.plugin'
 }
 
 dependencies {
-    api "one.xis:xis-controller-api:$xisVersion"
-    api "one.xis:xis-server:$xisVersion"
-}
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'src/main/java'
-            include '**/*.html', 'public/**'
-        }
-    }
+    api "one.xis:xis-controller-api"
+    api "one.xis:xis-server"
 }

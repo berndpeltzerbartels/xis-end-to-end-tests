@@ -14,7 +14,7 @@ public class DistributedRoutingConfig implements XisDistributedConfig {
     static final String NEXT_REMOTE_FRONTLET = "DistributedNextRemoteFrontlet";
 
     @Override
-    public Map<String, String> getWidgetHosts() {
+    public Map<String, String> getFrontletHosts() {
         return Map.of(
                 REMOTE_FRONTLET, remoteHost(),
                 NEXT_REMOTE_FRONTLET, remoteHost()

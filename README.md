@@ -18,6 +18,9 @@ XIS is loaded as a **real Maven dependency** (from `mavenLocal()`), not as a pro
 e2e-app-shared/      Gemeinsame XIS-App (Pages, Frontlets, Formulare, Templates)
 e2e-app-boot/        Schlanker XIS-Boot Runner für die gemeinsame App
 e2e-app-spring/      Schlanker Spring-Boot Runner für die gemeinsame App
+e2e-app-distributed-shared/  Gemeinsame App-Klassen für verteilte Laufzeit-Tests
+e2e-app-distributed-page/    Shell/Page-Prozess für verteilte Laufzeit-Tests
+e2e-app-distributed-remote/  Remote-Prozess für verteilte Pages und Frontlets
 
 e2e-tests-core/      Playwright-Tests gegen die Plattform-Runner
 ```
@@ -37,6 +40,11 @@ Einzelne Suite:
 Dieselbe Suite gegen Spring:
 ```bash
 ./gradlew :e2e-tests-core:springTest
+```
+
+Verteilte Page/Frontlet-Suite mit zwei Boot-Prozessen:
+```bash
+./gradlew :e2e-tests-core:distributedTest
 ```
 
 ## Wie es funktioniert

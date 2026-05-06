@@ -57,4 +57,30 @@ tasks.register('springTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('distributedTest', Test) {
+    description = 'Runs distributed XIS E2E tests with separate page and remote component runtimes.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def pageJar = project(':e2e-app-distributed-page').tasks.named('jar').get().archiveFile
+    def remoteJar = project(':e2e-app-distributed-remote').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-distributed-page').tasks.named('jar')
+    dependsOn project(':e2e-app-distributed-remote').tasks.named('jar')
+    systemProperty 'e2e.distributed.enabled', 'true'
+    systemProperty 'e2e.distributed.page.jar', pageJar.get().asFile.absolutePath
+    systemProperty 'e2e.distributed.remote.jar', remoteJar.get().asFile.absolutePath
+    systemProperty 'e2e.distributed.page.portArgument', '%d'
+    systemProperty 'e2e.distributed.remote.portArgument', '%d'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [distributed] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
+check.dependsOn tasks.named('distributedTest')

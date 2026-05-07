@@ -10,7 +10,17 @@ XIS is loaded as a **real Maven dependency** (from `mavenLocal()`), not as a pro
    cd ../xis && ./gradlew publishToMavenLocal
    ```
 2. Java 17+
-3. Beim ersten Playwright-Lauf muss der passende Browser heruntergeladen werden.
+3. Docker/Colima für Tests mit echten externen Diensten wie Keycloak.
+4. Beim ersten Playwright-Lauf muss der passende Browser heruntergeladen werden.
+
+Colima genügt als Docker-Laufzeit:
+```bash
+colima start
+docker info
+```
+
+Die Keycloak-Tests verwenden die Docker-CLI. Unter Colima öffnen sie bei Bedarf automatisch einen lokalen SSH-Tunnel zum
+Container-Port. Wenn eine andere Docker-Laufzeit verwendet wird, muss sie für normale Docker-CLI-Aufrufe sichtbar sein.
 
 ## Modulstruktur
 
@@ -36,6 +46,11 @@ Alle Suiten:
 ./gradlew test
 ```
 
+Vollständige Verifikation inklusive Spring, verteilter Laufzeit, verteilter SSO-Suite und Keycloak:
+```bash
+./gradlew check
+```
+
 Einzelne Suite:
 ```bash
 ./gradlew :e2e-tests-core:test
@@ -55,6 +70,36 @@ Verteilte SSO-Suite mit XIS-IDP, Shell-Prozess und Remote-Prozess:
 ```bash
 ./gradlew :e2e-tests-security:distributedSsoTest
 ```
+
+Keycloak-Suite mit echtem Keycloak-Container:
+```bash
+./gradlew :e2e-tests-security:keycloakTest
+```
+
+Diese Suite prüft den realen externen OpenID-Connect-Flow ohne lokales Loginformular: XIS leitet direkt zu Keycloak
+weiter, verarbeitet den Callback und rendert danach die geschützte Seite mit dem `sub`-Claim als `@UserId`.
+
+Google ist als manueller Test vorbereitet, bleibt aber disabled, weil dafür private OAuth-Credentials und ein
+interaktiver Login nötig sind. Dafür wird kein API-Key verwendet, sondern ein Google OAuth/OpenID-Connect Client mit
+Client-ID und Client-Secret. In Google Cloud muss die lokale XIS-Callback-URL als Redirect-URI zugelassen werden:
+
+```text
+http://localhost:58080/xis/auth/callback/google
+```
+
+Der manuelle Google-Test verwendet standardmäßig Port `58080`, damit die Redirect-URI in Google fest eingetragen werden
+kann. Bei Bedarf kann der Port mit `-De2e.google.app.port=<port>` geändert werden.
+
+Start lokal:
+```bash
+./gradlew :e2e-tests-security:googleManualTest \
+  -De2e.google.enabled=true \
+  -De2e.google.client.id=<client-id> \
+  -De2e.google.client.secret=<client-secret>
+```
+
+Der Test startet standardmäßig einen sichtbaren Browser, damit der Google-Login manuell abgeschlossen werden kann. Er ist
+absichtlich nicht Teil von `check`, weil er echte Zugangsdaten und Benutzerinteraktion braucht.
 
 ## Wie es funktioniert
 

@@ -17,6 +17,7 @@ test {
     dependsOn project(':e2e-app-security-boot').tasks.named('jar')
     systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
     systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.port', System.getProperty('e2e.google.app.port', '58080')
     systemProperty 'e2e.app.platform', 'boot'
     systemProperty 'e2e.security.mode', 'local'
 
@@ -174,9 +175,59 @@ tasks.register('distributedSsoTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('keycloakTest', Test) {
+    description = 'Runs the external OpenID Connect E2E test against a real Keycloak container.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def bootJar = project(':e2e-app-security-external-boot').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-security-external-boot').tasks.named('jar')
+    systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'keycloak'
+    systemProperty 'e2e.keycloak.enabled', 'true'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [keycloak] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
+tasks.register('googleManualTest', Test) {
+    description = 'Compiles the disabled/manual Google OpenID Connect E2E test. Enable it locally with real credentials.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def bootJar = project(':e2e-app-security-google-boot').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-security-google-boot').tasks.named('jar')
+    systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'google'
+    systemProperty 'e2e.browser.headless', System.getProperty('e2e.browser.headless', 'false')
+    systemProperty 'e2e.google.enabled', System.getProperty('e2e.google.enabled', 'false')
+    systemProperty 'e2e.google.client.id', System.getProperty('e2e.google.client.id', '')
+    systemProperty 'e2e.google.client.secret', System.getProperty('e2e.google.client.secret', '')
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [google manual] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('externalTest')
 check.dependsOn tasks.named('externalSpringTest')
 check.dependsOn tasks.named('xisIdpTest')
 check.dependsOn tasks.named('multipleIdpTest')
 check.dependsOn tasks.named('distributedSsoTest')
+check.dependsOn tasks.named('keycloakTest')

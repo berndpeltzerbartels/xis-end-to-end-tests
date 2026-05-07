@@ -1,0 +1,64 @@
+{
+  "realm": "xis",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "USER",
+        "description": "E2E user role"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "xis-e2e-client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "xis-e2e-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost/*"
+      ],
+      "webOrigins": [
+        "http://localhost"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "basic",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "keycloak-user",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "keycloak-user@example.test",
+      "firstName": "Keycloak",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "secret",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "USER"
+      ]
+    }
+  ]
+}

@@ -18,11 +18,16 @@ public class ExternalOidcConfig implements ExternalIDPConfig {
 
     @Override
     public String getClientId() {
-        return "xis-e2e-client";
+        return System.getProperty("e2e.oidc.client.id", "xis-e2e-client");
     }
 
     @Override
     public String getClientSecret() {
-        return "xis-e2e-secret";
+        return System.getProperty("e2e.oidc.client.secret", "xis-e2e-secret");
+    }
+
+    @Override
+    public String getScope() {
+        return System.getProperty("e2e.oidc.scope", ExternalIDPConfig.super.getScope());
     }
 }

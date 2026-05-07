@@ -40,7 +40,7 @@ abstract class SecurityAppE2ETest {
             throw new IllegalStateException("System property 'e2e.app.jar' not set.");
         }
         String portArgumentFormat = System.getProperty("e2e.app.portArgument", "%d");
-        int port = findFreePort();
+        int port = configuredPort("e2e.app.port").orElseGet(SecurityAppE2ETest::findFreePort);
         baseUrl = "http://localhost:" + port;
         int idpPort = findFreePort();
         idpBaseUrl = "http://localhost:" + idpPort;
@@ -91,7 +91,8 @@ abstract class SecurityAppE2ETest {
     @BeforeAll
     static void startBrowser() {
         playwright = Playwright.create();
-        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
+        boolean headless = Boolean.parseBoolean(System.getProperty("e2e.browser.headless", "true"));
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(headless));
     }
 
     @AfterAll
@@ -181,6 +182,14 @@ abstract class SecurityAppE2ETest {
         } catch (IOException e) {
             throw new RuntimeException("Failed to find a free port", e);
         }
+    }
+
+    private static java.util.Optional<Integer> configuredPort(String propertyName) {
+        String value = System.getProperty(propertyName);
+        if (value == null || value.isBlank()) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(Integer.parseInt(value));
     }
 
     private static void waitForConfig(Process process, String url) {

@@ -98,9 +98,28 @@ Start lokal:
   -De2e.google.client.secret=<client-secret>
 ```
 
-Der Test startet standardmäßig einen sichtbaren Browser, damit der Google-Login manuell abgeschlossen werden kann. Die
-Test-App verwendet eine Community-Seite mit leerem `@Roles`, also Login ohne benannte App-Rolle. Er ist absichtlich
-nicht Teil von `check`, weil er echte Zugangsdaten und Benutzerinteraktion braucht.
+Bequemer lokal: dieselben Werte können in `~/.gradle/gradle.properties` stehen. Diese Datei liegt außerhalb des
+Repositories und darf nicht committed werden:
+
+```properties
+e2e.google.enabled=true
+e2e.google.client.id=<client-id>
+e2e.google.client.secret=<client-secret>
+e2e.browser.channel=chrome
+```
+
+Danach reicht:
+
+```bash
+./gradlew :e2e-tests-security:googleManualTest
+```
+
+Der Test startet standardmäßig einen sichtbaren Chrome-Browser, damit Google den Login nicht als unsicheren embedded
+Browser ablehnt und der Login manuell abgeschlossen werden kann. Die Test-App verwendet eine Community-Seite mit leerem
+`@Roles`, also Login ohne benannte App-Rolle. Sie hat keinen `UserInfoService`; XIS liest nach dem Google-Callback das
+`id_token`, verwendet den Google-`sub` als XIS-User-ID und stellt einen lokalen XIS-Token ohne benannte Rollen aus. Bei
+einem einzigen Google-Provider leitet XIS deshalb direkt zu Google weiter. Der Test ist absichtlich nicht Teil von
+`check`, weil er echte Zugangsdaten und Benutzerinteraktion braucht.
 
 ## Wie es funktioniert
 

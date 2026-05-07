@@ -61,6 +61,10 @@ abstract class SecurityAppE2ETest {
             if (usesXisIdp()) {
                 command.add("-De2e.xis.idp.url=" + idpBaseUrl);
             }
+            if (isGoogleMode()) {
+                command.add("-De2e.google.client.id=" + requiredProperty("e2e.google.client.id"));
+                command.add("-De2e.google.client.secret=" + requiredProperty("e2e.google.client.secret"));
+            }
             command.add("-jar");
             command.add(jarPath);
             command.add(portArgumentFormat.formatted(port));
@@ -92,7 +96,12 @@ abstract class SecurityAppE2ETest {
     static void startBrowser() {
         playwright = Playwright.create();
         boolean headless = Boolean.parseBoolean(System.getProperty("e2e.browser.headless", "true"));
-        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(headless));
+        var launchOptions = new BrowserType.LaunchOptions().setHeadless(headless);
+        String channel = System.getProperty("e2e.browser.channel");
+        if (channel != null && !channel.isBlank()) {
+            launchOptions.setChannel(channel);
+        }
+        browser = playwright.chromium().launch(launchOptions);
     }
 
     @AfterAll
@@ -150,6 +159,10 @@ abstract class SecurityAppE2ETest {
         return "multiple-idp".equals(System.getProperty("e2e.security.mode", "local"));
     }
 
+    protected static boolean isGoogleMode() {
+        return "google".equals(System.getProperty("e2e.security.mode", "local"));
+    }
+
     private static boolean usesMockOidc() {
         return isExternalMode() || isMultipleIdpMode();
     }
@@ -190,6 +203,14 @@ abstract class SecurityAppE2ETest {
             return java.util.Optional.empty();
         }
         return java.util.Optional.of(Integer.parseInt(value));
+    }
+
+    private static String requiredProperty(String propertyName) {
+        String value = System.getProperty(propertyName);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("System property '" + propertyName + "' not set.");
+        }
+        return value;
     }
 
     private static void waitForConfig(Process process, String url) {

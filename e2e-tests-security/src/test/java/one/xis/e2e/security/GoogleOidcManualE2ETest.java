@@ -25,7 +25,9 @@ class GoogleOidcManualE2ETest extends SecurityAppE2ETest {
     void userCanLoginThroughGoogleOpenIdConnectProviderWhenEnabledLocally() {
         navigateTo("/community.html");
 
-        page.locator("a[href*='/xis/auth/callback/google']").click();
+        if (!page.url().startsWith("https://accounts.google.com/")) {
+            page.locator("a[href*='/xis/auth/callback/google']").click();
+        }
         page.waitForURL("https://accounts.google.com/**");
 
         /*

@@ -6,7 +6,6 @@ import one.xis.context.Component;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -26,7 +25,6 @@ public class GoogleSecurityUserInfoService implements UserInfoService<UserInfoIm
 
     @Override
     public void saveUserInfo(UserInfoImpl userInfo) {
-        userInfo.setRoles(Set.of("USER"));
         users.put(userInfo.getUserId(), userInfo);
     }
 }

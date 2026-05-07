@@ -98,8 +98,9 @@ Start lokal:
   -De2e.google.client.secret=<client-secret>
 ```
 
-Der Test startet standardmäßig einen sichtbaren Browser, damit der Google-Login manuell abgeschlossen werden kann. Er ist
-absichtlich nicht Teil von `check`, weil er echte Zugangsdaten und Benutzerinteraktion braucht.
+Der Test startet standardmäßig einen sichtbaren Browser, damit der Google-Login manuell abgeschlossen werden kann. Die
+Test-App verwendet eine Community-Seite mit leerem `@Roles`, also Login ohne benannte App-Rolle. Er ist absichtlich
+nicht Teil von `check`, weil er echte Zugangsdaten und Benutzerinteraktion braucht.
 
 ## Wie es funktioniert
 

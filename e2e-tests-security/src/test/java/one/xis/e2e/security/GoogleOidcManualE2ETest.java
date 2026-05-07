@@ -23,18 +23,19 @@ class GoogleOidcManualE2ETest extends SecurityAppE2ETest {
 
     @Test
     void userCanLoginThroughGoogleOpenIdConnectProviderWhenEnabledLocally() {
-        navigateTo("/protected.html");
+        navigateTo("/community.html");
 
         page.locator("a[href*='/xis/auth/callback/google']").click();
         page.waitForURL("https://accounts.google.com/**");
 
         /*
          * Continue manually in the headed browser. After Google redirects back,
-         * XIS stores a local application token with roles from
-         * GoogleSecurityUserInfoService.
+         * XIS stores a local application token. The target page uses @Roles
+         * without named roles, so the Google user only needs to be
+         * authenticated.
          */
-        page.waitForURL(baseUrl + "/protected.html");
-        assertThat(page.locator("#protected-title")).hasText("Protected");
-        assertThat(page.locator("#protected-message")).containsText("Protected content for ");
+        page.waitForURL(baseUrl + "/community.html");
+        assertThat(page.locator("#community-title")).hasText("Community");
+        assertThat(page.locator("#community-message")).containsText("Community content for ");
     }
 }

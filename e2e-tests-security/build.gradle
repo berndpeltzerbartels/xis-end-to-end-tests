@@ -145,8 +145,38 @@ tasks.register('multipleIdpTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('distributedSsoTest', Test) {
+    description = 'Runs distributed XIS SSO E2E tests with a XIS IDP, shell runtime, and remote runtime.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def shellJar = project(':e2e-app-distributed-sso-shell').tasks.named('jar').get().archiveFile
+    def remoteJar = project(':e2e-app-distributed-sso-remote').tasks.named('jar').get().archiveFile
+    def idpJar = project(':e2e-app-security-xis-idp').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-distributed-sso-shell').tasks.named('jar')
+    dependsOn project(':e2e-app-distributed-sso-remote').tasks.named('jar')
+    dependsOn project(':e2e-app-security-xis-idp').tasks.named('jar')
+    systemProperty 'e2e.distributed.sso.enabled', 'true'
+    systemProperty 'e2e.distributed.sso.shell.jar', shellJar.get().asFile.absolutePath
+    systemProperty 'e2e.distributed.sso.remote.jar', remoteJar.get().asFile.absolutePath
+    systemProperty 'e2e.idp.jar', idpJar.get().asFile.absolutePath
+    systemProperty 'e2e.distributed.sso.shell.portArgument', '%d'
+    systemProperty 'e2e.distributed.sso.remote.portArgument', '%d'
+    systemProperty 'e2e.idp.portArgument', '%d'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [distributed sso] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('externalTest')
 check.dependsOn tasks.named('externalSpringTest')
 check.dependsOn tasks.named('xisIdpTest')
 check.dependsOn tasks.named('multipleIdpTest')
+check.dependsOn tasks.named('distributedSsoTest')

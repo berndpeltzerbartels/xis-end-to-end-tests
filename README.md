@@ -21,8 +21,12 @@ e2e-app-spring/      Schlanker Spring-Boot Runner für die gemeinsame App
 e2e-app-distributed-shared/  Gemeinsame App-Klassen für verteilte Laufzeit-Tests
 e2e-app-distributed-page/    Shell/Page-Prozess für verteilte Laufzeit-Tests
 e2e-app-distributed-remote/  Remote-Prozess für verteilte Pages und Frontlets
+e2e-app-distributed-sso-shared/   Gemeinsame App-Klassen für verteilte SSO-Tests
+e2e-app-distributed-sso-shell/    Geschützte Shell-App für verteilte SSO-Tests
+e2e-app-distributed-sso-remote/   Geschützte Remote-App für verteilte SSO-Tests
 
 e2e-tests-core/      Playwright-Tests gegen die Plattform-Runner
+e2e-tests-security/  Playwright-Tests für Authentifizierung, IDP und SSO
 ```
 
 ## Tests ausführen
@@ -45,6 +49,11 @@ Dieselbe Suite gegen Spring:
 Verteilte Page/Frontlet-Suite mit zwei Boot-Prozessen:
 ```bash
 ./gradlew :e2e-tests-core:distributedTest
+```
+
+Verteilte SSO-Suite mit XIS-IDP, Shell-Prozess und Remote-Prozess:
+```bash
+./gradlew :e2e-tests-security:distributedSsoTest
 ```
 
 ## Wie es funktioniert

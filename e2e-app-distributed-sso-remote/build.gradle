@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'one.xis.plugin'
+}
+
+dependencies {
+    implementation project(':e2e-app-distributed-sso-shared')
+    implementation "one.xis:xis-boot"
+    implementation "org.slf4j:slf4j-simple:$slf4jVersion"
+}
+
+application {
+    mainClass = 'app.DistributedSsoRemoteMain'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    manifest {
+        attributes 'Main-Class': 'app.DistributedSsoRemoteMain'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = 'runnable'
+}

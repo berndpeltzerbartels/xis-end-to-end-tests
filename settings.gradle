@@ -23,6 +23,9 @@ include 'e2e-app-security-multiple-idp-client'
 include 'e2e-app-distributed-shared'
 include 'e2e-app-distributed-page'
 include 'e2e-app-distributed-remote'
+include 'e2e-app-distributed-sso-shared'
+include 'e2e-app-distributed-sso-shell'
+include 'e2e-app-distributed-sso-remote'
 
 // Test suites (Playwright)
 // Each suite can be run independently: ./gradlew :e2e-tests-core:test

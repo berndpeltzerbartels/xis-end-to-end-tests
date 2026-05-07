@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Distributed SSO Login</title></head>
+<body>
+<nav id="idp-links">
+    <div xis:repeat="idpId:externalIdpIds">
+        <a class="idp-link" id="idp-${idpId}" href="${externalIdpUrls[idpId]}">${idpId}</a>
+    </div>
+</nav>
+</body>
+</html>

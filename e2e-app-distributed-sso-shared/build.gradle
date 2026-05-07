@@ -1,0 +1,12 @@
+plugins {
+    id 'java-library'
+    id 'one.xis.plugin'
+}
+
+dependencies {
+    api "one.xis:xis-controller-api"
+    api "one.xis:xis-context"
+    api "one.xis:xis-authentication"
+    api "one.xis:xis-idp-client"
+    api "one.xis:xis-distributed"
+}

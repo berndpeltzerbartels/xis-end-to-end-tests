@@ -17,7 +17,7 @@ test {
     dependsOn project(':e2e-app-security-boot').tasks.named('jar')
     systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
     systemProperty 'e2e.app.portArgument', '%d'
-    systemProperty 'e2e.app.port', System.getProperty('e2e.google.app.port', '58080')
+    systemProperty 'e2e.app.port', System.getProperty('e2e.app.port', '58080')
     systemProperty 'e2e.app.platform', 'boot'
     systemProperty 'e2e.security.mode', 'local'
 
@@ -89,6 +89,28 @@ tasks.register('externalSpringTest', Test) {
 
     afterTest { desc, result ->
         logger.quiet "${desc.className} [external spring] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
+tasks.register('externalUserInfoTest', Test) {
+    description = 'Runs the external OpenID Connect E2E test with a UserInfoService that maps external users to local roles.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def bootJar = project(':e2e-app-security-external-userinfo-boot').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-security-external-userinfo-boot').tasks.named('jar')
+    systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot'
+    systemProperty 'e2e.security.mode', 'external-userinfo'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [external userinfo boot] - ${desc.name}: ${result.resultType}"
     }
 
     maxParallelForks = 1
@@ -198,41 +220,10 @@ tasks.register('keycloakTest', Test) {
     maxParallelForks = 1
 }
 
-tasks.register('googleManualTest', Test) {
-    description = 'Compiles the disabled/manual Google OpenID Connect E2E test. Enable it locally with real credentials.'
-    group = 'verification'
-
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.test.output.classesDirs
-    classpath = sourceSets.test.runtimeClasspath
-
-    def bootJar = project(':e2e-app-security-google-boot').tasks.named('jar').get().archiveFile
-    dependsOn project(':e2e-app-security-google-boot').tasks.named('jar')
-    systemProperty 'e2e.app.jar', bootJar.get().asFile.absolutePath
-    systemProperty 'e2e.app.portArgument', '%d'
-    systemProperty 'e2e.app.port', googleTestProperty('e2e.google.app.port', '58080')
-    systemProperty 'e2e.app.platform', 'boot'
-    systemProperty 'e2e.security.mode', 'google'
-    systemProperty 'e2e.browser.headless', googleTestProperty('e2e.browser.headless', 'false')
-    systemProperty 'e2e.browser.channel', googleTestProperty('e2e.browser.channel', 'chrome')
-    systemProperty 'e2e.google.enabled', googleTestProperty('e2e.google.enabled', 'false')
-    systemProperty 'e2e.google.client.id', googleTestProperty('e2e.google.client.id', '')
-    systemProperty 'e2e.google.client.secret', googleTestProperty('e2e.google.client.secret', '')
-
-    afterTest { desc, result ->
-        logger.quiet "${desc.className} [google manual] - ${desc.name}: ${result.resultType}"
-    }
-
-    maxParallelForks = 1
-}
-
-String googleTestProperty(String name, String defaultValue) {
-    return System.getProperty(name) ?: providers.gradleProperty(name).orElse(defaultValue).get()
-}
-
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('externalTest')
 check.dependsOn tasks.named('externalSpringTest')
+check.dependsOn tasks.named('externalUserInfoTest')
 check.dependsOn tasks.named('xisIdpTest')
 check.dependsOn tasks.named('multipleIdpTest')
 check.dependsOn tasks.named('distributedSsoTest')

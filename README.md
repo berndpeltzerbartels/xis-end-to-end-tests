@@ -79,47 +79,17 @@ Keycloak-Suite mit echtem Keycloak-Container:
 Diese Suite prüft den realen externen OpenID-Connect-Flow ohne lokales Loginformular: XIS leitet direkt zu Keycloak
 weiter, verarbeitet den Callback und rendert danach die geschützte Seite mit dem `sub`-Claim als `@UserId`.
 
-Google ist als manueller Test vorbereitet, bleibt aber disabled, weil dafür private OAuth-Credentials und ein
-interaktiver Login nötig sind. Dafür wird kein API-Key verwendet, sondern ein Google OAuth/OpenID-Connect Client mit
-Client-ID und Client-Secret. In Google Cloud muss die lokale XIS-Callback-URL als Redirect-URI zugelassen werden:
-
-```text
-http://localhost:58080/xis/auth/callback/google
-```
-
-Der manuelle Google-Test verwendet standardmäßig Port `58080`, damit die Redirect-URI in Google fest eingetragen werden
-kann. Bei Bedarf kann der Port mit `-De2e.google.app.port=<port>` geändert werden.
-
-Start lokal:
+Externer OpenID-Connect-Flow mit `UserInfoService`-Mapping:
 ```bash
-./gradlew :e2e-tests-security:googleManualTest \
-  -De2e.google.enabled=true \
-  -De2e.google.client.id=<client-id> \
-  -De2e.google.client.secret=<client-secret>
+./gradlew :e2e-tests-security:externalUserInfoTest
 ```
 
-Bequemer lokal: dieselben Werte können in `~/.gradle/gradle.properties` stehen. Diese Datei liegt außerhalb des
-Repositories und darf nicht committed werden:
+Diese Suite prüft, dass XIS beim externen Login `saveUserInfo` aufruft, bevor der lokale XIS-Token erstellt wird. Die
+Test-App mapped den externen Mock-OIDC-User dabei auf eine lokale Rolle, die für die Zielseite nötig ist.
 
-```properties
-e2e.google.enabled=true
-e2e.google.client.id=<client-id>
-e2e.google.client.secret=<client-secret>
-e2e.browser.channel=chrome
-```
-
-Danach reicht:
-
-```bash
-./gradlew :e2e-tests-security:googleManualTest
-```
-
-Der Test startet standardmäßig einen sichtbaren Chrome-Browser, damit Google den Login nicht als unsicheren embedded
-Browser ablehnt und der Login manuell abgeschlossen werden kann. Die Test-App verwendet eine Community-Seite mit leerem
-`@Roles`, also Login ohne benannte App-Rolle. Sie hat keinen `UserInfoService`; XIS liest nach dem Google-Callback das
-`id_token`, verwendet den Google-`sub` als XIS-User-ID und stellt einen lokalen XIS-Token ohne benannte Rollen aus. Bei
-einem einzigen Google-Provider leitet XIS deshalb direkt zu Google weiter. Der Test ist absichtlich nicht Teil von
-`check`, weil er echte Zugangsdaten und Benutzerinteraktion braucht.
+Google wird hier nicht als E2E-Test automatisiert. Google blockiert automatisierte Browser-Logins häufig als unsicheren
+Browser. Die providerunabhängige OpenID-Connect-Logik wird deshalb mit Mock-OIDC, XIS-IDP und einem echten
+Keycloak-Container getestet.
 
 ## Wie es funktioniert
 

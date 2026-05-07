@@ -5,12 +5,12 @@ import one.xis.Page;
 import one.xis.Roles;
 import one.xis.UserId;
 
-@Page("/community.html")
-@Roles
-public class GoogleCommunityPage {
+@Page("/mapped.html")
+@Roles("MAPPED_USER")
+public class ExternalMappedPage {
 
     @ModelData("message")
     String message(@UserId String userId) {
-        return "Community content for " + userId;
+        return "Mapped external account for " + userId;
     }
 }

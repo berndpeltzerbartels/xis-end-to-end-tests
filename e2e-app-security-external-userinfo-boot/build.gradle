@@ -13,14 +13,14 @@ dependencies {
 }
 
 application {
-    mainClass = 'app.GoogleSecurityMain'
+    mainClass = 'app.ExternalUserInfoSecurityMain'
 }
 
 jar {
     dependsOn configurations.runtimeClasspath
 
     manifest {
-        attributes 'Main-Class': 'app.GoogleSecurityMain'
+        attributes 'Main-Class': 'app.ExternalUserInfoSecurityMain'
     }
     from {
         configurations.runtimeClasspath.collect {

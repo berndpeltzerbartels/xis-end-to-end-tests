@@ -61,10 +61,6 @@ abstract class SecurityAppE2ETest {
             if (usesXisIdp()) {
                 command.add("-De2e.xis.idp.url=" + idpBaseUrl);
             }
-            if (isGoogleMode()) {
-                command.add("-De2e.google.client.id=" + requiredProperty("e2e.google.client.id"));
-                command.add("-De2e.google.client.secret=" + requiredProperty("e2e.google.client.secret"));
-            }
             command.add("-jar");
             command.add(jarPath);
             command.add(portArgumentFormat.formatted(port));
@@ -151,6 +147,10 @@ abstract class SecurityAppE2ETest {
         return "external".equals(System.getProperty("e2e.security.mode", "local"));
     }
 
+    protected static boolean isExternalUserInfoMode() {
+        return "external-userinfo".equals(System.getProperty("e2e.security.mode", "local"));
+    }
+
     protected static boolean isXisIdpMode() {
         return "xis-idp".equals(System.getProperty("e2e.security.mode", "local"));
     }
@@ -159,12 +159,8 @@ abstract class SecurityAppE2ETest {
         return "multiple-idp".equals(System.getProperty("e2e.security.mode", "local"));
     }
 
-    protected static boolean isGoogleMode() {
-        return "google".equals(System.getProperty("e2e.security.mode", "local"));
-    }
-
     private static boolean usesMockOidc() {
-        return isExternalMode() || isMultipleIdpMode();
+        return isExternalMode() || isExternalUserInfoMode() || isMultipleIdpMode();
     }
 
     private static boolean usesXisIdp() {
@@ -203,14 +199,6 @@ abstract class SecurityAppE2ETest {
             return java.util.Optional.empty();
         }
         return java.util.Optional.of(Integer.parseInt(value));
-    }
-
-    private static String requiredProperty(String propertyName) {
-        String value = System.getProperty(propertyName);
-        if (value == null || value.isBlank()) {
-            throw new IllegalStateException("System property '" + propertyName + "' not set.");
-        }
-        return value;
     }
 
     private static void waitForConfig(Process process, String url) {

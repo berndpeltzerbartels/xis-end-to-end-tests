@@ -1,11 +1,11 @@
 // Root build – gemeinsame Konfiguration für alle Submodule
 plugins {
     id 'java'
-    id 'one.xis.plugin' version '0.7.0' apply false
+    id 'one.xis.plugin' version '0.8.0' apply false
 }
 
 ext {
-    xisVersion        = '0.7.0'
+    xisVersion        = '0.8.0'
     javaVersion       = JavaVersion.VERSION_17
     javaVersionInt    = 17
 

@@ -106,6 +106,7 @@ class DistributedSsoE2ETest {
         page.locator("#password").fill("secret");
         page.locator("button[type='submit']").click();
         page.waitForURL(shellBaseUrl + "/distributed-sso-shell.html");
+        page.waitForFunction("window.app !== undefined && window.app.pageController !== undefined && window.app.pageController.resolvedURL !== undefined && window.app.pageController.resolvedURL.url === '/distributed-sso-shell.html'");
         page.locator("#open-distributed-sso-remote").click();
         assertThat(page.locator("#distributed-sso-remote-title")).hasText("Distributed SSO Remote");
     }

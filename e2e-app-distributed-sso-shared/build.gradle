@@ -9,4 +9,5 @@ dependencies {
     api "one.xis:xis-authentication"
     api "one.xis:xis-idp-client"
     api "one.xis:xis-distributed"
+    api "one.xis:xis-token"
 }

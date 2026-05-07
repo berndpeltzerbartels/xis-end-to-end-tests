@@ -71,6 +71,11 @@ Verteilte SSO-Suite mit XIS-IDP, Shell-Prozess und Remote-Prozess:
 ./gradlew :e2e-tests-security:distributedSsoTest
 ```
 
+Die verteilte SSO-Testapp verwendet einen gemeinsamen `LocalKeyProvider` in
+`e2e-app-distributed-sso-shared`. Das ist Absicht: Nach dem externen XIS-IDP-Login
+stellt die Shell lokale XIS-Tokens aus, und die Remote-App muss diese Tokens mit
+denselben lokalen Schluesseln validieren koennen.
+
 Keycloak-Suite mit echtem Keycloak-Container:
 ```bash
 ./gradlew :e2e-tests-security:keycloakTest

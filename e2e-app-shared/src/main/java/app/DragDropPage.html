@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Drag And Drop</title></head>
+<body>
+<h1>Drag And Drop</h1>
+<div id="source" xis:drag="from:${source}">Source ${source}</div>
+<div id="target" xis:drop="move(from, '${target}')">Target ${target}</div>
+<p id="last-move">${lastMove}</p>
+</body>
+</html>

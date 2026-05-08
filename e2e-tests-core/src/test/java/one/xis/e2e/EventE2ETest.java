@@ -59,6 +59,24 @@ class EventE2ETest extends BootAppE2ETest {
         }
     }
 
+    @Test
+    void actionReconnectsClosedSseBeforePublishingClientEvent() {
+        openEvents(page);
+        page.locator("#reset-events").click();
+        assertThat(page.locator("#event-version")).hasText("0");
+
+        page.evaluate("""
+                () => {
+                    window.app.eventConnector.eventSource.close();
+                }
+                """);
+
+        page.locator("#publish-client").click();
+
+        assertThat(page.locator("#event-version")).hasText("1");
+        page.waitForFunction("window.app && window.app.eventConnector && window.app.eventConnector.isConnected()");
+    }
+
     private void openEvents(Page targetPage) {
         targetPage.navigate(baseUrl + "/events.html");
         targetPage.waitForLoadState();

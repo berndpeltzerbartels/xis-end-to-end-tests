@@ -46,7 +46,10 @@ Alle Suiten:
 ./gradlew test
 ```
 
-Vollständige Verifikation inklusive Spring, verteilter Laufzeit, verteilter SSO-Suite und Keycloak:
+`test` ist im Root-Projekt bewusst als vollständiger E2E-Lauf verdrahtet. Es startet auch die zusätzlichen
+`Test`-Tasks für Spring, verteilte Laufzeit, verteilte SSO-Suite, mehrere IDPs und Keycloak.
+
+Vollständige Gradle-Verifikation:
 ```bash
 ./gradlew check
 ```

@@ -1,11 +1,18 @@
 // Root build – gemeinsame Konfiguration für alle Submodule
 plugins {
     id 'java'
-    id 'one.xis.plugin' version '0.9.3' apply false
+    id 'one.xis.plugin' apply false
 }
 
+def xisVersionFile = file('../xis/gradle.properties')
+if (!xisVersionFile.isFile()) {
+    throw new GradleException("XIS version file not found: ${xisVersionFile}. Check out 'xis' next to this repository.")
+}
+def xisProperties = new Properties()
+xisVersionFile.withInputStream { xisProperties.load(it) }
+
 ext {
-    xisVersion        = '0.9.3'
+    xisVersion        = xisProperties.getProperty('projectVersion')
     javaVersion       = JavaVersion.VERSION_17
     javaVersionInt    = 17
 

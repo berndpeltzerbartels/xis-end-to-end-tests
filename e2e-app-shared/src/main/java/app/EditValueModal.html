@@ -1,0 +1,11 @@
+<div id="edit-value-modal" xmlns:xis="https://xis.one/xsd">
+  <h2>Edit value</h2>
+  <p id="modal-source">${source}</p>
+  <xis:form binding="valueForm">
+    <label for="modal-value">Value</label>
+    <input id="modal-value" xis:binding="value" xis:error-class="error"/>
+    <xis:message id="modal-value-message" message-for="value"/>
+    <button id="modal-save" xis:action="save">Save</button>
+    <button id="modal-cancel" xis:action="cancel">Cancel</button>
+  </xis:form>
+</div>

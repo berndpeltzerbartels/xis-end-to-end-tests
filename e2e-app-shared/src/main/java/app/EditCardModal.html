@@ -1,0 +1,8 @@
+<div id="edit-card-modal" xmlns:xis="https://xis.one/xsd">
+  <h2>Edit card</h2>
+  <xis:form binding="cardForm">
+    <input id="card-modal-value" xis:binding="value" xis:error-class="error"/>
+    <xis:message id="card-modal-value-message" message-for="value"/>
+    <button id="card-modal-save" xis:action="save">Save</button>
+  </xis:form>
+</div>

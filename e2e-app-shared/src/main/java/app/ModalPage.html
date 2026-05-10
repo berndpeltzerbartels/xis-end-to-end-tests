@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Modals</title></head>
+<body>
+<h1>Modal test</h1>
+<p id="page-value">${pageValue}</p>
+<button id="open-page-modal" xis:modal="/modals/edit?source=page-html">Open modal</button>
+<a id="open-page-modal-link" href="/should-not-navigate.html" xis:modal="/modals/edit?source=page-link">Open modal link</a>
+<button id="open-page-modal-action" xis:action="openFromAction">Open modal by action</button>
+
+<section id="modal-card-one">
+  <xis:frontlet-container container-id="modal-card-one-container" default-frontlet="ModalCard">
+    <xis:parameter name="card" value="one"/>
+  </xis:frontlet-container>
+</section>
+
+<section id="modal-card-two">
+  <xis:frontlet-container container-id="modal-card-two-container" default-frontlet="ModalCard">
+    <xis:parameter name="card" value="two"/>
+  </xis:frontlet-container>
+</section>
+</body>
+</html>

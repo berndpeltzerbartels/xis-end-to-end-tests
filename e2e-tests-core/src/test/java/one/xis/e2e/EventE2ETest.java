@@ -60,6 +60,68 @@ class EventE2ETest extends BootAppE2ETest {
     }
 
     @Test
+    void pageRefreshEventsAffectOnlyCurrentPage() {
+        BrowserContext publisherContext = browser.newContext();
+        try {
+            Page publisher = publisherContext.newPage();
+            openEvents(publisher);
+            publisher.locator("#reset-events").click();
+
+            openEvents(page);
+            assertThat(page.locator("#event-version")).hasText("0");
+
+            publisher.locator("#publish-all").click();
+            assertThat(page.locator("#event-version")).hasText("1");
+
+            publisher.locator("#publish-follow-page").click();
+            assertThat(page.locator("#event-version")).hasText("1");
+
+            page.locator("#open-follow-events").click();
+            assertThat(page.locator("#follow-events-title")).hasText("Follow Events");
+            assertThat(page.locator("#follow-event-version")).hasText("1");
+
+            publisher.locator("#publish-all").click();
+            assertThat(page.locator("#follow-event-version")).hasText("1");
+
+            publisher.locator("#publish-follow-page").click();
+            assertThat(page.locator("#follow-event-version")).hasText("2");
+        } finally {
+            publisherContext.close();
+        }
+    }
+
+    @Test
+    void frontletRefreshEventsAffectOnlyCurrentFrontlet() {
+        BrowserContext publisherContext = browser.newContext();
+        try {
+            Page publisher = publisherContext.newPage();
+            openEvents(publisher);
+            publisher.locator("#reset-events").click();
+
+            openEvents(page);
+            assertThat(page.locator("#source-frontlet-version")).hasText("0");
+
+            publisher.locator("#publish-source-frontlet").click();
+            assertThat(page.locator("#source-frontlet-version")).hasText("1");
+
+            publisher.locator("#publish-follow-frontlet").click();
+            assertThat(page.locator("#source-frontlet-version")).hasText("1");
+
+            page.locator("#open-follow-events").click();
+            assertThat(page.locator("#follow-events-title")).hasText("Follow Events");
+            assertThat(page.locator("#follow-frontlet-version")).hasText("1");
+
+            publisher.locator("#publish-source-frontlet").click();
+            assertThat(page.locator("#follow-frontlet-version")).hasText("1");
+
+            publisher.locator("#publish-follow-frontlet").click();
+            assertThat(page.locator("#follow-frontlet-version")).hasText("2");
+        } finally {
+            publisherContext.close();
+        }
+    }
+
+    @Test
     void actionReconnectsClosedSseBeforePublishingClientEvent() {
         openEvents(page);
         page.locator("#reset-events").click();

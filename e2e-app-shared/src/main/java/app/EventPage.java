@@ -12,32 +12,51 @@ import one.xis.RefreshEventPublisher;
 public class EventPage {
 
     private final RefreshEventPublisher refreshEventPublisher;
-    private int version;
+    private final EventState eventState;
 
     public EventPage(RefreshEventPublisher refreshEventPublisher) {
         this.refreshEventPublisher = refreshEventPublisher;
+        this.eventState = EventState.get();
     }
 
     @ModelData("version")
     int version() {
-        return version;
+        return eventState.sourcePageVersion();
     }
 
     @Action
     void publishToAll() {
-        version++;
+        eventState.incrementSourcePageVersion();
         refreshEventPublisher.publishToAll("core-event");
     }
 
     @Action
     void publishToCurrentClient(@ClientId String clientId) {
-        version++;
+        eventState.incrementSourcePageVersion();
         refreshEventPublisher.publishToClient("core-event", clientId);
     }
 
     @Action
     void resetEvents() {
-        version = 0;
+        eventState.reset();
         refreshEventPublisher.publishToAll("core-event");
+    }
+
+    @Action
+    void publishFollowPageEvent() {
+        eventState.incrementFollowPageVersion();
+        refreshEventPublisher.publishToAll("follow-page-event");
+    }
+
+    @Action
+    void publishSourceFrontletEvent() {
+        eventState.incrementSourceFrontletVersion();
+        refreshEventPublisher.publishToAll("source-frontlet-event");
+    }
+
+    @Action
+    void publishFollowFrontletEvent() {
+        eventState.incrementFollowFrontletVersion();
+        refreshEventPublisher.publishToAll("follow-frontlet-event");
     }
 }

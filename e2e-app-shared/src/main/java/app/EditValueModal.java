@@ -3,9 +3,9 @@ package app;
 import lombok.Data;
 import one.xis.Action;
 import one.xis.FormData;
-import one.xis.FrontletParameter;
 import one.xis.Modal;
 import one.xis.ModalResponse;
+import one.xis.Parameter;
 import one.xis.validation.Mandatory;
 
 @Modal("/modals/edit")
@@ -34,7 +34,7 @@ public class EditValueModal {
     }
 
     @one.xis.ModelData("source")
-    String source(@FrontletParameter("source") String source) {
+    String source(@Parameter("source") String source) {
         return source;
     }
 }

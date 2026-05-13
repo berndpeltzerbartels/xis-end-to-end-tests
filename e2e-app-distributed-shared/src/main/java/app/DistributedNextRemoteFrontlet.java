@@ -1,8 +1,8 @@
 package app;
 
 import one.xis.Frontlet;
-import one.xis.FrontletParameter;
 import one.xis.ModelData;
+import one.xis.Parameter;
 
 import java.util.Map;
 
@@ -15,12 +15,12 @@ public class DistributedNextRemoteFrontlet {
     }
 
     @ModelData("nextFrontletMessage")
-    String nextFrontletMessage(@FrontletParameter("message") String message) {
+    String nextFrontletMessage(@Parameter("message") String message) {
         return message;
     }
 
     @ModelData("nextFrontletParameters")
-    String nextFrontletParameters(@FrontletParameter Map<String, String> parameters) {
+    String nextFrontletParameters(@Parameter Map<String, String> parameters) {
         return parameters.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .sorted()

@@ -2,10 +2,10 @@ package app;
 
 import one.xis.Action;
 import one.xis.Frontlet;
-import one.xis.FrontletParameter;
 import one.xis.ModelData;
 import one.xis.ModalResponse;
 import one.xis.Page;
+import one.xis.Parameter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,17 +40,17 @@ public class ModalPage {
     public static class ModalCard {
 
         @ModelData("card")
-        String card(@FrontletParameter("card") String card) {
+        String card(@Parameter("card") String card) {
             return card;
         }
 
         @ModelData("cardValue")
-        String cardValue(@FrontletParameter("card") String card) {
+        String cardValue(@Parameter("card") String card) {
             return cardValues.getOrDefault(card, "empty");
         }
 
         @ModelData("cardVersion")
-        int cardVersion(@FrontletParameter("card") String card) {
+        int cardVersion(@Parameter("card") String card) {
             return cardVersions.getOrDefault(card, 0);
         }
     }

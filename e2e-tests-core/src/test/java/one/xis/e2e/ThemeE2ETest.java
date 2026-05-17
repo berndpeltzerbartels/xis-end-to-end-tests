@@ -50,37 +50,53 @@ class ThemeE2ETest extends BootAppE2ETest {
     }
 
     @Test
-    void gridClassesCreateThreeAlignedColumns() {
+    void themeGridAndSpansCreateExpectedLayout() {
         navigateTo("/theme.html");
-        assertThat(page.locator("#grid-f")).isVisible();
+        assertThat(page.locator("#grid-notes")).isVisible();
 
-        BoundingBox a = box("#grid-a");
-        BoundingBox b = box("#grid-b");
-        BoundingBox c = box("#grid-c");
-        BoundingBox d = box("#grid-d");
-        BoundingBox e = box("#grid-e");
-        BoundingBox f = box("#grid-f");
+        BoundingBox name = wrapperBox("#grid-name");
+        BoundingBox city = wrapperBox("#grid-city");
+        BoundingBox stage = wrapperBox("#grid-stage");
+        BoundingBox email = wrapperBox("#grid-email");
+        BoundingBox phone = wrapperBox("#grid-phone");
+        BoundingBox notes = wrapperBox("#grid-notes");
+        BoundingBox grid = box("#theme-grid");
 
-        assertClose(b.y, a.y);
-        assertClose(c.y, a.y);
-        assertClose(e.y, d.y);
-        assertClose(f.y, d.y);
-        assertThat(d.y).isGreaterThan(a.y + a.height);
+        assertClose(city.y, name.y);
+        assertThat(stage.y).isGreaterThan(name.y + name.height);
+        assertThat(email.y).isGreaterThan(stage.y + stage.height);
+        assertClose(phone.y, email.y);
+        assertClose(notes.y, email.y);
 
-        assertClose(d.x, a.x);
-        assertClose(e.x, b.x);
-        assertClose(f.x, c.x);
-        assertThat(b.x).isGreaterThan(a.x + a.width);
-        assertThat(c.x).isGreaterThan(b.x + b.width);
+        assertClose(name.x, stage.x);
+        assertClose(stage.x, email.x);
+        assertThat(name.width).isGreaterThan(city.width * 1.8);
+        assertThat(city.x).isGreaterThan(name.x + name.width);
+
+        assertThat(stage.width).isGreaterThan(name.width + city.width);
+
+        assertThat(phone.x).isGreaterThan(email.x + email.width);
+        assertThat(notes.x).isGreaterThan(phone.x + phone.width);
+        assertClose(phone.width, email.width);
+        assertClose(notes.width, email.width);
 
         Object gap = page.evaluate("""
             () => getComputedStyle(document.querySelector('#theme-grid')).columnGap
             """);
         assertThat(gap).isEqualTo("24px");
+
+        Object columns = page.evaluate("""
+            () => getComputedStyle(document.querySelector('#theme-grid')).gridTemplateColumns
+            """);
+        assertThat(columns.toString().trim().split("\\s+")).hasSize(3);
     }
 
     private BoundingBox box(String selector) {
         return page.locator(selector).boundingBox();
+    }
+
+    private BoundingBox wrapperBox(String selector) {
+        return page.locator(selector).locator("xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' form-field ')][1]").boundingBox();
     }
 
     private void assertClose(double actual, double expected) {

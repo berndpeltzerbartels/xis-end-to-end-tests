@@ -2,28 +2,32 @@
 <html xmlns:xis="https://xis.one/xsd" lang="en">
 <head><title>Theme</title></head>
 <body>
-<nav class="nav" id="theme-nav">
-    <ul>
-        <li><a id="theme-home" xis:page="/index.html">Home</a></li>
-        <li>
-            <a id="theme-products" href="#">Products</a>
-            <ul>
-                <li><a id="theme-sub-1" xis:page="/theme.html">Sub 1</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+<theme:navigation id="theme-nav" logo="/theme-logo.svg" logo-alt="Theme test app">
+    <theme:nav-item id="theme-home" page="/index.html" label="Home"/>
+    <theme:nav-group label="Products">
+        <theme:nav-item id="theme-sub-1" page="/theme.html" label="Sub 1"/>
+    </theme:nav-group>
+</theme:navigation>
 
-<main class="wrapper">
-    <section id="theme-grid" class="col3">
-        <input id="grid-a" value="A">
-        <input id="grid-b" value="B">
-        <input id="grid-c" value="C">
-        <input id="grid-d" value="D">
-        <input id="grid-e" value="E">
-        <input id="grid-f" value="F">
-    </section>
+<theme:form-page title="Theme layout"
+                 binding="layout"
+                 action="saveLayout"
+                 submit-label="Save">
+    <theme:grid id="theme-grid" columns="3">
+        <theme:input id="grid-name" binding="name" title="Name" span="2"/>
+        <theme:input id="grid-city" binding="city" title="City"/>
+        <theme:select id="grid-stage"
+                      binding="stage"
+                      title="Stage"
+                      options="stages"
+                      option-value="code"
+                      option-label="label"
+                      span="3"/>
+        <theme:input id="grid-email" binding="email" title="E-mail"/>
+        <theme:input id="grid-phone" binding="phone" title="Phone"/>
+        <theme:input id="grid-notes" binding="notes" title="Notes"/>
+    </theme:grid>
     <button id="theme-button" type="button">Themed Button</button>
-</main>
+</theme:form-page>
 </body>
 </html>

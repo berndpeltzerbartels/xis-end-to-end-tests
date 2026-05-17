@@ -19,18 +19,19 @@ class FrontletE2ETest extends BootAppE2ETest {
     @Test
     void clickInFrontlet() {
         navigateTo("/frontlets.html");
-        assertThat(page.locator("#clicks")).hasText("0");
+        var clicks = clicks();
         page.locator("#btn-click").click();
-        assertThat(page.locator("#clicks")).hasText("1");
+        assertThat(page.locator("#clicks")).hasText(String.valueOf(clicks + 1));
     }
 
     @Test
     void multipleClicksInFrontlet() {
         navigateTo("/frontlets.html");
+        var clicks = clicks();
         page.locator("#btn-click").click();
         page.locator("#btn-click").click();
         page.locator("#btn-click").click();
-        assertThat(page.locator("#clicks")).hasText("3");
+        assertThat(page.locator("#clicks")).hasText(String.valueOf(clicks + 3));
     }
 
     @Test
@@ -64,8 +65,13 @@ class FrontletE2ETest extends BootAppE2ETest {
         page.locator("#load-frontlet-b").click();
         assertThat(page.locator("#frontlet-b")).isVisible();
 
+        var clicks = clicks();
         page.locator("#btn-click").click();
         page.locator("#btn-click").click();
-        assertThat(page.locator("#clicks")).hasText("2");
+        assertThat(page.locator("#clicks")).hasText(String.valueOf(clicks + 2));
+    }
+
+    private int clicks() {
+        return Integer.parseInt(page.locator("#clicks").textContent().trim());
     }
 }

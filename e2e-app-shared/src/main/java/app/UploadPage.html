@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Upload</title></head>
+<body>
+<h1>Upload test</h1>
+<xis:form binding="upload" id="upload-form">
+  <input id="upload-title" type="text" xis:binding="title"/>
+  <input id="upload-file" type="file" xis:binding="attachment"/>
+  <button id="upload-save" xis:action="save" type="submit">Save</button>
+</xis:form>
+<div id="upload-result">${result}</div>
+</body>
+</html>

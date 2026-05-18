@@ -14,7 +14,7 @@ public class EditorPage {
 
     @FormData("editor")
     EditorForm form() {
-        return new EditorForm("draft");
+        return new EditorForm("article-editor", "draft");
     }
 
     @ModelData("savedValue")

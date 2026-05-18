@@ -55,4 +55,17 @@ class LocalSecurityE2ETest extends SecurityAppE2ETest {
         assertThat(page.locator("#editor-title")).hasText("Editor");
         assertThat(page.locator("#saved-value")).hasText("published");
     }
+
+    @Test
+    void ownershipGuardRejectsForeignSubmittedObject() {
+        navigateTo("/editor.html");
+        login("editor", "secret", "/editor.html");
+
+        page.locator("#editor-document-id").fill("article-alice");
+        page.locator("#editor-value").fill("forged");
+        page.locator("#editor-save").click();
+        page.waitForLoadState();
+
+        assertThat(page.locator("#username")).isVisible();
+    }
 }

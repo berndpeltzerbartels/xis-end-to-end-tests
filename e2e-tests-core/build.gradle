@@ -22,6 +22,8 @@ dependencies {
 test {
     useJUnitPlatform()
     exclude '**/DistributedE2ETest.class'
+    exclude '**/BootHttpDependencyE2ETest.class'
+    exclude '**/BootHttpNativeDependencyE2ETest.class'
 
     def bootJar = project(':e2e-app-boot').tasks.named('jar').get().archiveFile
     dependsOn project(':e2e-app-boot').tasks.named('jar')
@@ -43,6 +45,8 @@ tasks.register('springTest', Test) {
 
     useJUnitPlatform()
     exclude '**/DistributedE2ETest.class'
+    exclude '**/BootHttpDependencyE2ETest.class'
+    exclude '**/BootHttpNativeDependencyE2ETest.class'
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
 
@@ -85,5 +89,49 @@ tasks.register('distributedTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('bootHttpTest', Test) {
+    description = 'Runs the XIS Boot HTTP convenience dependency E2E test on the JVM.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    include '**/BootHttpDependencyE2ETest.class'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def bootHttpJar = project(':e2e-app-boot-http').tasks.named('jar').get().archiveFile
+    dependsOn project(':e2e-app-boot-http').tasks.named('jar')
+    systemProperty 'e2e.app.jar', bootHttpJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'boot-http'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [boot-http] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
+tasks.register('bootHttpNativeTest', Test) {
+    description = 'Builds the native XIS Boot HTTP app and verifies its plain HTTP controller.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    include '**/BootHttpNativeDependencyE2ETest.class'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    dependsOn project(':e2e-app-boot-http-native').tasks.named('xisNativeCompile')
+    def nativeExecutable = project(':e2e-app-boot-http-native').layout.buildDirectory.file('native/e2e-app-boot-http-native')
+    systemProperty 'e2e.native.bootHttp.executable', nativeExecutable.get().asFile.absolutePath
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [boot-http-native] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('distributedTest')
+check.dependsOn tasks.named('bootHttpTest')
+check.dependsOn tasks.named('bootHttpNativeTest')

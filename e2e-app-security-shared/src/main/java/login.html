@@ -8,6 +8,10 @@
     <input xis:binding="username" type="text" id="username"/>
     <label for="password">Password</label>
     <input xis:binding="password" type="password" id="password"/>
+    <div id="totp-section" xis:if="${totpLoginEnabled}">
+        <label for="totpCode">Authenticator code</label>
+        <input xis:binding="totpCode" type="text" id="totpCode"/>
+    </div>
     <input xis:binding="state" type="hidden" id="state"/>
     <button xis:action="login" type="submit" id="login-button">Login</button>
 </form>

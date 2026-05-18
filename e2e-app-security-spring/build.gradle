@@ -9,6 +9,8 @@ dependencies {
     implementation project(':e2e-app-security-shared')
     implementation "one.xis:xis-spring"
     implementation "one.xis:xis-authentication"
+    implementation "one.xis:xis-http-controller"
+    implementation "one.xis:xis-totp:$xisVersion"
     implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 }
 

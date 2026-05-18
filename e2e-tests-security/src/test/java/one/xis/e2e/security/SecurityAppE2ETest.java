@@ -17,7 +17,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
 import java.time.Instant;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 abstract class SecurityAppE2ETest {
 
@@ -131,6 +134,37 @@ abstract class SecurityAppE2ETest {
         page.waitForLoadState();
     }
 
+    protected void loginWithTotp(String username, String password, String totpCode, String expectedPath) {
+        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.locator("#username").fill(username);
+        page.locator("#password").fill(password);
+        page.locator("#totpCode").fill(totpCode);
+        page.locator("#login-button").click();
+        page.waitForURL(baseUrl + expectedPath);
+        page.waitForLoadState();
+    }
+
+    protected String provisionTotpSecret(String userId) {
+        var client = HttpClient.newHttpClient();
+        var request = HttpRequest.newBuilder(URI.create(baseUrl + "/e2e/totp/provisioning-uri?userId=" + userId)).GET().build();
+        try {
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new IllegalStateException("TOTP provisioning endpoint returned " + response.statusCode());
+            }
+            return secret(response.body());
+        } catch (IOException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new RuntimeException("Unable to provision TOTP secret", e);
+        }
+    }
+
+    protected String currentTotpCode(String secret) {
+        return totpCode(secret, System.currentTimeMillis() / 1000 / 30);
+    }
+
     protected void loginAtXisIdp() {
         page.waitForURL(idpBaseUrl + "/idp/login.html**");
         page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
@@ -237,5 +271,48 @@ abstract class SecurityAppE2ETest {
 
     private static boolean isTransientGatewayStatus(int statusCode) {
         return statusCode == 502 || statusCode == 503 || statusCode == 504;
+    }
+
+    private static String secret(String provisioningUri) {
+        for (String parameter : provisioningUri.substring(provisioningUri.indexOf('?') + 1).split("&")) {
+            String[] pair = parameter.split("=", 2);
+            if ("secret".equals(pair[0])) {
+                return pair[1];
+            }
+        }
+        throw new IllegalArgumentException("No secret in provisioning URI");
+    }
+
+    private static String totpCode(String base32Secret, long timeStep) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(new SecretKeySpec(base32Decode(base32Secret), "HmacSHA1"));
+            byte[] hash = mac.doFinal(ByteBuffer.allocate(Long.BYTES).putLong(timeStep).array());
+            int offset = hash[hash.length - 1] & 0x0f;
+            int binary = ((hash[offset] & 0x7f) << 24)
+                    | ((hash[offset + 1] & 0xff) << 16)
+                    | ((hash[offset + 2] & 0xff) << 8)
+                    | (hash[offset + 3] & 0xff);
+            return String.format("%06d", binary % 1_000_000);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to create TOTP code", e);
+        }
+    }
+
+    private static byte[] base32Decode(String text) {
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        int buffer = 0;
+        int bitsLeft = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = Character.toUpperCase(text.charAt(i));
+            int value = c >= 'A' && c <= 'Z' ? c - 'A' : c - '2' + 26;
+            buffer = (buffer << 5) | value;
+            bitsLeft += 5;
+            if (bitsLeft >= 8) {
+                out.write((buffer >> (bitsLeft - 8)) & 0xff);
+                bitsLeft -= 8;
+            }
+        }
+        return out.toByteArray();
     }
 }

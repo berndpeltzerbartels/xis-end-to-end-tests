@@ -12,12 +12,24 @@ public class SecurityUserInfoService implements UserInfoService<UserInfo> {
 
     private final Map<String, String> passwords = Map.of(
             "alice", "secret",
-            "editor", "secret"
+            "editor", "secret",
+            "totpAlice", "secret",
+            "totpEditor", "secret",
+            "totpSetupAlice", "secret",
+            "totpSetupBob", "secret",
+            "totpSetupFlow", "secret",
+            "totpWrongPassword", "secret"
     );
 
     private final Map<String, UserInfo> users = Map.of(
             "alice", user("alice", Set.of("USER")),
-            "editor", user("editor", Set.of("USER", "DATA_EDITOR"))
+            "editor", user("editor", Set.of("USER", "DATA_EDITOR")),
+            "totpAlice", user("totpAlice", Set.of("USER")),
+            "totpEditor", user("totpEditor", Set.of("USER")),
+            "totpSetupAlice", user("totpSetupAlice", Set.of("USER")),
+            "totpSetupBob", user("totpSetupBob", Set.of("USER")),
+            "totpSetupFlow", user("totpSetupFlow", Set.of("USER")),
+            "totpWrongPassword", user("totpWrongPassword", Set.of("USER"))
     );
 
     @Override

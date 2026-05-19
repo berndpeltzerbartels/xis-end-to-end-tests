@@ -25,6 +25,7 @@ test {
     exclude '**/BootHttpDependencyE2ETest.class'
     exclude '**/BootHttpNativeDependencyE2ETest.class'
     exclude '**/GroovyAppE2ETest.class'
+    exclude '**/KotlinAppE2ETest.class'
 
     def bootJar = project(':e2e-app-boot').tasks.named('jar').get().archiveFile
     dependsOn project(':e2e-app-boot').tasks.named('jar')
@@ -49,6 +50,7 @@ tasks.register('springTest', Test) {
     exclude '**/BootHttpDependencyE2ETest.class'
     exclude '**/BootHttpNativeDependencyE2ETest.class'
     exclude '**/GroovyAppE2ETest.class'
+    exclude '**/KotlinAppE2ETest.class'
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
 
@@ -155,8 +157,31 @@ tasks.register('groovyTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('kotlinTest', Test) {
+    description = 'Runs the focused Kotlin XIS Boot E2E test.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    include '**/KotlinAppE2ETest.class'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def kotlinJar = project(':xis-kotlin-test-app').tasks.named('jar').get().archiveFile
+    dependsOn project(':xis-kotlin-test-app').tasks.named('jar')
+    systemProperty 'e2e.app.jar', kotlinJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'kotlin'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [kotlin] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('distributedTest')
 check.dependsOn tasks.named('bootHttpTest')
 check.dependsOn tasks.named('bootHttpNativeTest')
 check.dependsOn tasks.named('groovyTest')
+check.dependsOn tasks.named('kotlinTest')

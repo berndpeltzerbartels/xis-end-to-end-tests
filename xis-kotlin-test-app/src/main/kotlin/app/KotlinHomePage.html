@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Kotlin E2E</title></head>
+<body>
+<h1 id="headline">${headline}</h1>
+<div id="injected-message">${injectedMessage}</div>
+<div id="bean-label">${beanLabel}</div>
+<ul id="kotlin-items">
+    <li xis:repeat="item:kotlinItems">${item}</li>
+</ul>
+<xis:form binding="kotlinForm">
+    <input id="kotlin-name" type="text" xis:binding="name"/>
+    <input id="kotlin-amount" type="number" xis:binding="amount"/>
+    <button id="kotlin-save" type="submit" xis:action="save">Save</button>
+</xis:form>
+<div id="saved">${saved}</div>
+<a id="explicit-link" xis:page="/explicit-kotlin.html">Explicit template</a>
+</body>
+</html>

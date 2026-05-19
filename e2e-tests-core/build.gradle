@@ -24,6 +24,7 @@ test {
     exclude '**/DistributedE2ETest.class'
     exclude '**/BootHttpDependencyE2ETest.class'
     exclude '**/BootHttpNativeDependencyE2ETest.class'
+    exclude '**/GroovyAppE2ETest.class'
 
     def bootJar = project(':e2e-app-boot').tasks.named('jar').get().archiveFile
     dependsOn project(':e2e-app-boot').tasks.named('jar')
@@ -47,6 +48,7 @@ tasks.register('springTest', Test) {
     exclude '**/DistributedE2ETest.class'
     exclude '**/BootHttpDependencyE2ETest.class'
     exclude '**/BootHttpNativeDependencyE2ETest.class'
+    exclude '**/GroovyAppE2ETest.class'
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
 
@@ -131,7 +133,30 @@ tasks.register('bootHttpNativeTest', Test) {
     maxParallelForks = 1
 }
 
+tasks.register('groovyTest', Test) {
+    description = 'Runs the focused Groovy XIS Boot E2E test.'
+    group = 'verification'
+
+    useJUnitPlatform()
+    include '**/GroovyAppE2ETest.class'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    def groovyJar = project(':xis-groovy-test-app').tasks.named('jar').get().archiveFile
+    dependsOn project(':xis-groovy-test-app').tasks.named('jar')
+    systemProperty 'e2e.app.jar', groovyJar.get().asFile.absolutePath
+    systemProperty 'e2e.app.portArgument', '%d'
+    systemProperty 'e2e.app.platform', 'groovy'
+
+    afterTest { desc, result ->
+        logger.quiet "${desc.className} [groovy] - ${desc.name}: ${result.resultType}"
+    }
+
+    maxParallelForks = 1
+}
+
 check.dependsOn tasks.named('springTest')
 check.dependsOn tasks.named('distributedTest')
 check.dependsOn tasks.named('bootHttpTest')
 check.dependsOn tasks.named('bootHttpNativeTest')
+check.dependsOn tasks.named('groovyTest')

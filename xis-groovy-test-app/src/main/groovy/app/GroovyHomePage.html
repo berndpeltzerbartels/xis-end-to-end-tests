@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:xis="https://xis.one/xsd" lang="en">
+<head><title>Groovy E2E</title></head>
+<body>
+<h1 id="headline">${headline}</h1>
+<div id="injected-message">${injectedMessage}</div>
+<div id="bean-label">${beanLabel}</div>
+<ul id="groovy-items">
+    <li xis:repeat="item:groovyItems">${item}</li>
+</ul>
+<xis:form binding="groovyForm">
+    <input id="groovy-name" type="text" xis:binding="name"/>
+    <input id="groovy-amount" type="number" xis:binding="amount"/>
+    <button id="groovy-save" type="submit" xis:action="save">Save</button>
+</xis:form>
+<div id="saved">${saved}</div>
+<a id="explicit-link" xis:page="/explicit-groovy.html">Explicit template</a>
+</body>
+</html>

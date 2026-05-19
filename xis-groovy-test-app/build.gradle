@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id 'one.xis.plugin'
+}
+
+dependencies {
+    implementation "one.xis:xis-boot"
+    implementation "org.apache.groovy:groovy:4.0.24"
+    implementation "org.slf4j:slf4j-simple:$slf4jVersion"
+}
+
+application {
+    mainClass = 'app.Main'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    manifest {
+        attributes 'Main-Class': 'app.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = 'runnable'
+}

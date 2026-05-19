@@ -9,7 +9,7 @@ dependencies {
     implementation "one.xis:xis-boot"
     implementation "one.xis:xis-authentication"
     implementation "one.xis:xis-http-controller"
-    implementation "one.xis:xis-totp:$xisVersion"
+    implementation "one.xis:xis-totp"
     implementation "org.slf4j:slf4j-simple:$slf4jVersion"
 }
 

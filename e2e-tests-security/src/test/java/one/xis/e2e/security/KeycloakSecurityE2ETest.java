@@ -100,7 +100,7 @@ class KeycloakSecurityE2ETest {
                         + page.url() + " and body is:\n" + page.locator("body").innerText(), e);
             }
             try {
-                page.waitForFunction("window.app !== undefined && document.querySelector('#protected-title') !== null");
+                page.waitForFunction("window.XIS !== undefined && document.querySelector('#protected-title') !== null");
             } catch (PlaywrightException e) {
                 throw new AssertionError("Expected protected page content after callback, but current URL is "
                         + page.url() + ", content is:\n" + page.content(), e);

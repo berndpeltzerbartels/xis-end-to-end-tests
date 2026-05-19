@@ -101,12 +101,12 @@ class DistributedSsoE2ETest {
     private void openRemotePageThroughShellLogin(Page page) {
         page.navigate(shellBaseUrl + "/distributed-sso-shell.html");
         page.waitForURL(idpBaseUrl + "/idp/login.html**");
-        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         page.locator("#username").fill("xis-idp-user");
         page.locator("#password").fill("secret");
         page.locator("button[type='submit']").click();
         page.waitForURL(shellBaseUrl + "/distributed-sso-shell.html");
-        page.waitForFunction("window.app !== undefined && window.app.pageController !== undefined && window.app.pageController.resolvedURL !== undefined && window.app.pageController.resolvedURL.url === '/distributed-sso-shell.html'");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#distributed-sso-shell-title') !== null");
         page.locator("#open-distributed-sso-remote").click();
         assertThat(page.locator("#distributed-sso-remote-title")).hasText("Distributed SSO Remote");
     }

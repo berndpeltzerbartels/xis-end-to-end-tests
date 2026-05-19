@@ -57,7 +57,7 @@ class LocalSecurityE2ETest extends SecurityAppE2ETest {
         provisionTotpSecret("totpEditor");
 
         navigateTo("/protected.html");
-        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         page.locator("#username").fill("totpEditor");
         page.locator("#password").fill("secret");
         page.locator("#totpCode").fill("000000");
@@ -73,7 +73,7 @@ class LocalSecurityE2ETest extends SecurityAppE2ETest {
         String secret = provisionTotpSecret("totpWrongPassword");
 
         navigateTo("/protected.html");
-        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         page.locator("#username").fill("totpWrongPassword");
         page.locator("#password").fill("wrong");
         page.locator("#totpCode").fill(currentTotpCode(secret));
@@ -156,7 +156,7 @@ class LocalSecurityE2ETest extends SecurityAppE2ETest {
     }
 
     private void setupTotp(String username) {
-        page.waitForFunction("window.app !== undefined && document.querySelector('#totp-setup-username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#totp-setup-username') !== null");
         page.locator("#totp-setup-username").fill(username);
         page.locator("#totp-setup-password").fill("secret");
         page.locator("#totp-setup-button").click();

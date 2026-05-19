@@ -126,7 +126,7 @@ abstract class SecurityAppE2ETest {
     }
 
     protected void login(String username, String password, String expectedPath) {
-        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         page.locator("#username").fill(username);
         page.locator("#password").fill(password);
         page.locator("#login-button").click();
@@ -135,7 +135,7 @@ abstract class SecurityAppE2ETest {
     }
 
     protected void loginWithTotp(String username, String password, String totpCode, String expectedPath) {
-        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         page.locator("#username").fill(username);
         page.locator("#password").fill(password);
         page.locator("#totpCode").fill(totpCode);
@@ -167,7 +167,7 @@ abstract class SecurityAppE2ETest {
 
     protected void loginAtXisIdp() {
         page.waitForURL(idpBaseUrl + "/idp/login.html**");
-        page.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        page.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         page.locator("#username").fill("xis-idp-user");
         page.locator("#password").fill("secret");
         page.locator("button[type='submit']").click();

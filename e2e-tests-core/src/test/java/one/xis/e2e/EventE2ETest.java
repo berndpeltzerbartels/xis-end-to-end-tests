@@ -129,19 +129,19 @@ class EventE2ETest extends BootAppE2ETest {
 
         page.evaluate("""
                 () => {
-                    window.app.eventConnector.eventSource.close();
+                    window.XIS.closeEventStreams();
                 }
                 """);
 
         page.locator("#publish-client").click();
 
         assertThat(page.locator("#event-version")).hasText("1");
-        page.waitForFunction("window.app && window.app.eventConnector && window.app.eventConnector.isConnected()");
+        page.waitForFunction("window.XIS && window.XIS.isEventStreamConnected()");
     }
 
     private void openEvents(Page targetPage) {
         targetPage.navigate(baseUrl + "/events.html");
         targetPage.waitForLoadState();
-        targetPage.waitForFunction("window.app && window.app.eventConnector && window.app.eventConnector.isConnected()");
+        targetPage.waitForFunction("window.XIS && window.XIS.isEventStreamConnected()");
     }
 }

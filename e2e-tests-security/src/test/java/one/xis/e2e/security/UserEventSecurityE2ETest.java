@@ -70,13 +70,13 @@ class UserEventSecurityE2ETest extends SecurityAppE2ETest {
 
     private Page loginAndOpenUserEvents(Page targetPage, String username) {
         targetPage.navigate(baseUrl + "/user-events.html");
-        targetPage.waitForFunction("window.app !== undefined && document.querySelector('#username') !== null");
+        targetPage.waitForFunction("window.XIS !== undefined && document.querySelector('#username') !== null");
         targetPage.locator("#username").fill(username);
         targetPage.locator("#password").fill("secret");
         targetPage.locator("#login-button").click();
         targetPage.waitForURL(baseUrl + "/user-events.html");
         targetPage.waitForLoadState();
-        targetPage.waitForFunction("window.app && window.app.eventConnector && window.app.eventConnector.isConnected()");
+        targetPage.waitForFunction("window.XIS && window.XIS.isEventStreamConnected()");
         assertThat(targetPage.locator("#user-event-user")).hasText(username);
         return targetPage;
     }
